@@ -61,8 +61,7 @@ module.exports = (bot) => {
         const senderId = ctx.getId(senderJid);
         const senderName = ctx.sender.pushName;
         const groupJid = isGroup ? ctx.id : null;
-        const groupId = isGroup ? ctx.getId(groupJid) : null;
-        const groupName = (await ctx.group()).name;
+        const groupName = isGroup ? (await ctx.group()).name() : null;
 
         const isOwner = ctx.sender.isOwner();
         const isCmd = ctx.isCmd();
@@ -150,7 +149,7 @@ module.exports = (bot) => {
         }
 
         if (isGroup) {
-            if (!isCmd || isCmd?.didyoumean) console.log(util.styleText("magenta", "[~]"), `Incoming message from group: ${groupName} (${groupId}), by: ${senderName} (${senderId})`);
+            if (!isCmd || isCmd?.didyoumean) console.log(util.styleText("magenta", "[~]"), `Incoming message from group: ${groupName} (${groupJid}), by: ${senderName} (${senderJid})`);
 
             if (groupDb.sewa && Date.now() >= groupDb.sewaExpiration) {
                 groupDb.sewa = false;
@@ -246,6 +245,6 @@ module.exports = (bot) => {
             }
         }
 
-        if (isPrivate && (!isCmd || isCmd?.didyoumean)) console.log(util.styleText("magenta", "[~]"), `Incoming message from: ${senderName} (${senderId})`);
+        if (isPrivate && (!isCmd || isCmd?.didyoumean)) console.log(util.styleText("magenta", "[~]"), `Incoming message from: ${senderName} (${senderJid})`);
     });
 };

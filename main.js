@@ -57,7 +57,7 @@ const bot = new Client({
                 premiumExpiration: null,
                 banned: false,
                 afk: {},
-                lastClaim: {},
+                lastClaim: 0,
                 sessionId: {},
                 lastSentMsg: {},
                 botGroupMembership: {},

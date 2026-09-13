@@ -18,12 +18,12 @@ module.exports = {
         const rewardData = ctx.sender.isOwner() || senderDb.premium ? claimRewards.premium : claimRewards.regular;
         const currentTime = Date.now();
         if (!senderDb.lastClaim) senderDb.lastClaim = {};
-        const lastClaim = senderDb.lastClaim.daily || 0;
+        const lastClaim = senderDb.lastClaim || 0;
         const remainingTime = rewardData.cooldown - (currentTime - lastClaim);
         if (remainingTime > 0) return await ctx.reply(ctx.format.info(`Sudah klaim. Tunggu ${ctx.format.convertMsToDuration(remainingTime)}.`));
         try {
             senderDb.coin += rewardData.reward;
-            senderDb.lastClaim.daily = currentTime;
+            senderDb.lastClaim = currentTime;
             senderDb.save();
             await ctx.reply(ctx.format.info(`Klaim ${rewardData.reward} koin. Total: ${senderDb.coin}`));
         } catch (error) {

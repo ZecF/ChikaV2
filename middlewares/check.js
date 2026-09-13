@@ -6,10 +6,8 @@ module.exports = (bot) => {
         const isPrivate = ctx.isPrivate();
 
         const senderJid = ctx.sender.jid;
-        const senderId = ctx.getId(senderJid);
         const senderName = ctx.sender.pushName;
-        const groupId = isGroup ? ctx.getId(ctx.id) : null;
-        const groupName = (await ctx.group()).name;
+        const groupName = isGroup ? (await ctx.group()).name() : null;
         const isOwner = ctx.sender.isOwner();
 
         const botDb = ctx.db.bot;
@@ -29,9 +27,9 @@ module.exports = (bot) => {
 
         if (ctx.prefix !== "force") {
             if (isGroup && !ctx.msg.key.fromMe) {
-                console.log(util.styleText("magenta", "[~]"), `Incoming command: ${ctx.used.command}, from group: ${groupName} (${groupId}), by: ${senderName} (${senderId})`);
+                console.log(util.styleText("magenta", "[~]"), `Incoming command: ${ctx.used.command}, from group: ${groupName} (${groupJid}), by: ${senderName} (${senderJid})`);
             } else if (isPrivate && !ctx.msg.key.fromMe) {
-                console.log(util.styleText("magenta", "[~]"), `Incoming command: ${ctx.used.command}, from: ${senderName} (${senderId})`);
+                console.log(util.styleText("magenta", "[~]"), `Incoming command: ${ctx.used.command}, from: ${senderName} (${senderJid})`);
             }
         }
 
