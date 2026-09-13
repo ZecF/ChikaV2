@@ -1,4 +1,3 @@
-require("node:process").loadEnvFile();
 const { Config } = require("./lib");
 const http = require("node:http");
 const path = require("node:path");

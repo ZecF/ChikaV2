@@ -20,7 +20,13 @@ module.exports = {
             for (const co of config.owner.co || []) ownerCo.push({ ...co, id: await resolve(co.id || []) });
             config.core.set("owner.id", ownerId);
             config.core.set("owner.co", ownerCo);
-            await ctx.reply(ctx.format.info("LID isinkronkan. Restart bot untuk menerapkan."));
+            await ctx.reply({
+                text: ctx.format.info("LID isinkronkan. Restart bot untuk menerapkan."),
+                buttons: [{
+                    text: "Restart",
+                    id: `${ctx.used.prefix + ctx.used.command}restart`
+                }]
+            });
         } catch (error) {
             await ctx.helper.handleError(ctx, error);
         }
