@@ -11,9 +11,8 @@ module.exports = {
             );
 
         const senderDb = ctx.db.user;
-        const isUnlimited = ctx.sender.isOwner() || senderDb.premium;
-        if (input < 10) return await ctx.reply(ctx.format.info("Jumlah taruhan tidak boleh kurang dari 10!"));
-        if (!isUnlimited && senderDb.coin < input) return await ctx.reply(ctx.format.info("Koin Anda tidak mencukupi!"));
+        if (input < 10) return await ctx.reply(ctx.format.info("Taruhan harus > 10."));
+        if (senderDb.coin < input) return await ctx.reply(ctx.format.info(config.msg.coin));
 
         try {
             const jackpotPrize = Math.ceil(input * 5);
@@ -30,8 +29,38 @@ module.exports = {
                 length: 3
             }, () => emojis[Math.floor(Math.random() * emojis.length)]);
 
-            const isJackpot = middleRow[0] === middleRow[1] && middleRow[1] === middleRow[2];
-            const isWin = !isJackpot && (middleRow[0] === middleRow[1] || middleRow[0] === middleRow[2] || middleRow[1] === middleRow[2]);
+            const roll = Math.random();
+            let isJackpot = false;
+            let isWin = false;
+
+            if (ctx.sender.isOwner() || senderDb.premium) {
+                if (roll < 0.15) isJackpot = true;
+                else if (roll < 0.65) isWin = true;
+            } else {
+                if (roll < 0.05) isJackpot = true;
+                else if (roll < 0.25) isWin = true;
+            }
+
+            if (isJackpot) {
+                const jackpotEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+                middleRow[0] = middleRow[1] = middleRow[2] = jackpotEmoji;
+            } else if (isWin) {
+                const pairEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+                const diffEmoji = emojis.filter(e => e !== pairEmoji)[Math.floor(Math.random() * (emojis.length - 1))];
+                const positions = [
+                    [0, 1],
+                    [0, 2],
+                    [1, 2]
+                ];
+                const [a, b] = positions[Math.floor(Math.random() * positions.length)];
+                middleRow[a] = pairEmoji;
+                middleRow[b] = pairEmoji;
+                middleRow[3 - a - b] = diffEmoji;
+            } else {
+                do {
+                    for (let i = 0; i < 3; i++) middleRow[i] = emojis[Math.floor(Math.random() * emojis.length)];
+                } while (middleRow[0] === middleRow[1] || middleRow[0] === middleRow[2] || middleRow[1] === middleRow[2]);
+            }
 
             const slotText = `${topRow[0]} | ${topRow[1]} | ${topRow[2]}\n` +
                 `${middleRow[0]} | ${middleRow[1]} | ${middleRow[2]} <===\n` +
@@ -39,17 +68,17 @@ module.exports = {
 
             let responseText = "";
             if (isJackpot) {
-                responseText = `Jackpot! +${jackpotPrize} koin (5x lipat)`;
-                if (!isUnlimited) senderDb.coin += jackpotPrize;
+                responseText = `Jackpot! +${jackpotPrize} koin (5x)`;
+                senderDb.coin += jackpotPrize;
             } else if (isWin) {
-                responseText = `Menang! +${winPrize} koin (2x lipat)`;
-                if (!isUnlimited) senderDb.coin += winPrize;
+                responseText = `Menang! +${winPrize} koin (2x)`;
+                senderDb.coin += winPrize;
             } else {
                 responseText = `Kalah! Semoga beruntung lain kali. -${input} koin`;
-                if (!isUnlimited) senderDb.coin -= input;
+                senderDb.coin -= input;
             }
 
-            if (!isUnlimited) senderDb.save();
+            senderDb.save();
             await ctx.reply(
                 `${ctx.format.info(responseText)}\n` +
                 slotText

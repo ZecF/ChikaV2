@@ -1,14 +1,8 @@
 {
   "name": "nirwabot",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Useless WhatsApp Bot",
   "main": "index.js",
-  "directories": {
-    "commands": "commands",
-    "events": "events",
-    "lib": "lib",
-    "middlewares": "middlewares"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "setup": "cp config.example.json config.json && npm install",

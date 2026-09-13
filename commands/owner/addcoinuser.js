@@ -13,10 +13,10 @@ module.exports = {
                 text: `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                     `${ctx.format.generateCmdExample(ctx.used, "@6281234567891 8 -s")}\n` +
                     `${ctx.format.generateNotes([
-                        "Balas/quote pesan untuk menjadikan pengirim sebagai akun target."
-                        ])}\n` +
+                        "Balas/quote pesan target."
+                    ])}\n` +
                     ctx.format.generatesFlagInfo({
-                        "-s": "Tetap diam dengan tidak menyiarkan ke akun target"
+                        "-s": "Diam, tanpa notifikasi"
                     }),
                 mentions: ["6281234567891@s.whatsapp.net"]
             });
@@ -31,8 +31,8 @@ module.exports = {
                     default: false
                 }
             });
-            if (!flag.silent && !config.system.restrict) await ctx.sendMessage(target.id, ctx.format.info(`Anda telah menerima ${coinAmount} koin dari owner!`));
-            await ctx.reply(ctx.format.info(`Berhasil menambahkan ${coinAmount} koin kepada pengguna itu!`));
+            if (!flag.silent && !config.system.restrict) await ctx.sendMessage(target.id, ctx.format.info(`Anda menerima ${coinAmount} koin dari owner.`));
+            await ctx.reply(ctx.format.info(`+${coinAmount} koin untuk target.`));
         } catch (error) {
             await ctx.helper.handleError(ctx, error);
         }

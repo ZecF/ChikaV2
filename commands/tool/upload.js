@@ -11,7 +11,7 @@ module.exports = {
             const result = await ctx.msg.media.upload() || await ctx.quoted.media.upload();
             await ctx.reply({
                 text: `❖ ${ctx.format.bold("URL")}: ${result}`,
-                footer: ctx.format.info("File akan kedaluwarsa setelah 3 jam."),
+                footer: ctx.format.info("File kedaluwarsa 3 jam."),
                 nativeFlow: [{
                     text: "Salin URL",
                     copy: result

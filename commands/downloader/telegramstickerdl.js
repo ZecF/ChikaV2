@@ -6,8 +6,8 @@ const chunkArray = (array, chunkSize) => {
 
 const prepareStickerPacks = (stickers, title, name, packId) => {
     const maxPerPack = 60;
-    const chunks = chunkArray(stickers, maxPerPack);
-    return chunks.filter(chunk => !chunk.is_animated).map((chunk, index) => ({
+    const chunks = chunkArray(stickers.filter(sticker => !sticker.is_animated), maxPerPack);
+    return chunks.map((chunk, index) => ({
         name: title,
         publisher: config.bot.name,
         description: `${name}${chunks.length > 1 ? ` (${index + 1}/${chunks.length})` : ""}`,
@@ -25,6 +25,7 @@ module.exports = {
     aliases: ["telegramsticker", "telesticker", "telestickerdl"],
     category: "downloader",
     permissions: {
+        coin: 10,
         premium: true
     },
     code: async (ctx) => {
@@ -40,7 +41,7 @@ module.exports = {
                 url
             });
             const result = (await ctx.request.get(apiUrl)).data.result;
-            const stickerPacks = prepareStickerPacks(ctx, result.sticker, result.title, result.name, ctx.msg.key.id);
+            const stickerPacks = prepareStickerPacks(result.sticker, result.title, result.name, ctx.msg.key.id);
             if (stickerPacks.length === 0) return await ctx.reply(config.msg.notFound);
             for (let i = 0; i < stickerPacks.length; i++) {
                 const stickerPack = stickerPacks[i];

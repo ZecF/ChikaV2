@@ -25,6 +25,7 @@ module.exports = [{
     aliases: ["hdvid"],
     category: "tool",
     permissions: {
+        coin: 10,
         premium: true
     },
     code: async (ctx) => {

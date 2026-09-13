@@ -20,15 +20,15 @@ class QuizGame {
     defaultFormatQuestion(ctx, data) {
         let text = `✦ — ${data[this.questionKey]}\n` +
             "\n" +
-            `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} Koin\n` +
-            `❖ ${ctx.format.bold("Batas waktu")}: ${ctx.format.convertMsToDuration(this.timeout)}\n`;
+            `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
+            `❖ ${ctx.format.bold("Waktu")}: ${ctx.format.convertMsToDuration(this.timeout)}\n`;
         for (const field of this.extraFields) {
             if (data[field.key]) text += `❖ ${ctx.format.bold(field.label)}: ${data[field.key]}\n`;
         }
         return text.trim();
     }
 
-    defaultFormatAnswer(ctx, answer) {
+    defaultFormatAnswer(ctx, answer, data) {
         return ctx.format.ucwords(answer);
     }
 
@@ -40,7 +40,7 @@ class QuizGame {
 
     async handle(ctx) {
         const sessionKey = `${ctx.id}_${this.name}`;
-        if (sessions.has(sessionKey)) return await ctx.reply(ctx.format.info("Sesi permainan sedang berjalan!"));
+        if (sessions.has(sessionKey)) return await ctx.reply(ctx.format.info("Sesi sedang berjalan."));
 
         try {
             let data = await this.getQuestionData(ctx);
@@ -61,7 +61,8 @@ class QuizGame {
             const game = {
                 coin: this.coinReward,
                 timeout: this.timeout,
-                answer: data[this.answerKey].toLowerCase()
+                answer: data[this.answerKey].toLowerCase(),
+                data
             };
 
             sessions.set(sessionKey, true);
@@ -113,32 +114,32 @@ class QuizGame {
             collector.on("collect", async (collCtx) => {
                 const participantAnswer = collCtx.msg.body?.toLowerCase();
                 const participantDb = collCtx.db.user;
-                const isUnlimited = collCtx.sender.isOwner() || participantDb?.premium;
 
                 if (participantAnswer === game.answer) {
                     sessions.delete(sessionKey);
                     collector.stop();
-                    if (!isUnlimited) participantDb.coin += game.coin;
+                    participantDb.coin += game.coin;
                     participantDb.winGame += 1;
                     participantDb.save();
                     await collCtx.reply({
-                        text: ctx.format.info(`Benar! +${game.coin} Koin`),
+                        text: ctx.format.info(`Benar! +${game.coin} koin`),
                         buttons: playAgain
                     });
                 } else if (participantAnswer === `hint_${ctx.used.command}`) {
-                    if (!isUnlimited) {
-                        if (participantDb.coin < this.hintCost) return await collCtx.reply(ctx.format.info(config.msg.coin));
-                        participantDb.coin -= this.hintCost;
-                        participantDb.save();
-                    }
-                    const clue = game.answer.replace(/[aiueo]/g, "_");
+                    if (participantDb.coin < this.hintCost) return await collCtx.reply(ctx.format.info(config.msg.coin));
+                    participantDb.coin -= this.hintCost;
+                    participantDb.save();
+                    const clue = game.answer.replace(/\S/g, (c) => /[aiueo]/.test(c) ? "_" : c);
                     await collCtx.reply(ctx.format.monospace(clue.toUpperCase()));
                 } else if (participantAnswer === `surrender_${ctx.used.command}`) {
                     sessions.delete(sessionKey);
                     collector.stop();
-                    const formattedAnswer = this.formatAnswer(ctx, game.answer);
+                    participantDb.coin -= game.coin;
+                    participantDb.winGame -= 1;
+                    participantDb.save();
+                    const formattedAnswer = this.formatAnswer(ctx, game.answer, game.data);
                     await collCtx.reply({
-                        text: ctx.format.info(`Anda menyerah! Jawaban: ${formattedAnswer}.`),
+                        text: ctx.format.info(`Menyerah! Jawaban: ${formattedAnswer}`),
                         buttons: playAgain
                     });
                 } else if (ctx.helper.didYouMean(participantAnswer, [game.answer]) === game.answer) {
@@ -149,9 +150,13 @@ class QuizGame {
             collector.on("end", async () => {
                 if (sessions.has(sessionKey)) {
                     sessions.delete(sessionKey);
-                    const formattedAnswer = this.formatAnswer(ctx, game.answer);
+                    const userDb = ctx.db.user;
+                    userDb.coin -= game.coin;
+                    userDb.winGame -= 1;
+                    userDb.save();
+                    const formattedAnswer = this.formatAnswer(ctx, game.answer, game.data);
                     await ctx.reply({
-                        text: ctx.format.info(`Waktu habis! Jawaban: ${formattedAnswer}.`),
+                        text: ctx.format.info(`Waktu habis! Jawaban: ${formattedAnswer}`),
                         buttons: playAgain
                     });
                 }
@@ -181,13 +186,8 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        extraFields: [{
-            key: "deskripsi",
-            label: "Deskripsi"
-        }],
-        formatAnswer(ctx, data) {
-            const answer = data[this.answerKey] || "";
-            const description = data.deskripsi || "";
+        formatAnswer(ctx, answer, data) {
+            const description = data.deskripsi;
             return `${ctx.format.ucwords(answer)} (${description})`;
         }
     },
@@ -231,10 +231,10 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion(ctx, data) {
+        formatQuestion() {
             return `✦ — Bendera negara apa ini?\n` +
                 "\n" +
-                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} Koin\n` +
+                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
                 `❖ ${ctx.format.bold("Batas waktu")}: ${ctx.format.convertMsToDuration(this.timeout)}`;
         }
     },
@@ -247,10 +247,10 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion(ctx, data) {
+        formatQuestion() {
             return `✦ — Game apa ini?\n` +
                 "\n" +
-                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} Koin\n` +
+                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
                 `❖ ${ctx.format.bold("Batas waktu")}: ${ctx.format.convertMsToDuration(this.timeout)}`;
         }
     },
@@ -283,10 +283,10 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion(ctx, data) {
+        formatQuestion() {
             return `✦ — Dengarkan suara hero Mobile Legends ini!\n` +
                 "\n" +
-                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} Koin\n` +
+                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
                 `❖ ${ctx.format.bold("Batas waktu")}: ${ctx.format.convertMsToDuration(this.timeout)}`;
         }
     },
@@ -300,10 +300,10 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion(ctx, data) {
+        formatQuestion() {
             return `✦ — Siapa member JKT48 ini?\n` +
                 "\n" +
-                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} Koin\n` +
+                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
                 `❖ ${ctx.format.bold("Batas waktu")}: ${ctx.format.convertMsToDuration(this.timeout)}`;
         }
     },
@@ -326,10 +326,10 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion(ctx, data) {
+        formatQuestion() {
             return `✦ — Siapa karakter Free Fire ini?\n` +
                 "\n" +
-                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} Koin\n` +
+                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
                 `❖ ${ctx.format.bold("Batas waktu")}: ${ctx.format.convertMsToDuration(this.timeout)}`;
         }
     },
@@ -342,10 +342,10 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion(ctx, data) {
+        formatQuestion() {
             return `✦ — Kartun apa ini?\n` +
                 "\n" +
-                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} Koin\n` +
+                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
                 `❖ ${ctx.format.bold("Batas waktu")}: ${ctx.format.convertMsToDuration(this.timeout)}`;
         }
     },
@@ -366,10 +366,10 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion(ctx, data) {
+        formatQuestion(ctx, answer, data) {
             return `✦ — Lambang ${data.lambang} adalah unsur apa?\n` +
                 "\n" +
-                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} Koin\n` +
+                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
                 `❖ ${ctx.format.bold("Batas waktu")}: ${ctx.format.convertMsToDuration(this.timeout)}`;
         }
     },
@@ -382,10 +382,10 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion(ctx, data) {
+        formatQuestion() {
             return `✦ — Lagu apa ini?\n` +
                 "\n" +
-                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} Koin\n` +
+                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
                 `❖ ${ctx.format.bold("Batas waktu")}: ${ctx.format.convertMsToDuration(this.timeout)}`;
         }
     },
@@ -407,10 +407,10 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion(ctx, data) {
+        formatQuestion() {
             return `✦ — Logo apa ini?\n` +
                 "\n" +
-                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} Koin\n` +
+                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
                 `❖ ${ctx.format.bold("Batas waktu")}: ${ctx.format.convertMsToDuration(this.timeout)}`;
         }
     },
@@ -432,10 +432,10 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion(ctx, data) {
+        formatQuestion() {
             return `✦ — Angka berapa yang terlihat?\n` +
                 "\n" +
-                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} Koin\n` +
+                `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
                 `❖ ${ctx.format.bold("Batas waktu")}: ${ctx.format.convertMsToDuration(this.timeout)}`;
         }
     },

@@ -15,7 +15,7 @@ module.exports = {
 
         if (ctx.helper.isUrl(input))
             return await ctx.reply({
-                text: ctx.format.info("Input berupa URL, gunakan tombol download di bawah:"),
+                text: ctx.format.info("Input URL, gunakan tombol download:"),
                 buttons: [{
                     text: "Download Audio",
                     id: `${ctx.used.prefix}youtubeaudio ${input}`

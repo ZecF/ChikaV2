@@ -1,6 +1,6 @@
 module.exports = {
     name: "mode",
-    alises: ["m"],
+    aliases: ["m"],
     category: "owner",
     permissions: {
         owner: true
@@ -12,7 +12,7 @@ module.exports = {
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                 `${ctx.format.generateCmdExample(ctx.used, "self")}\n` +
                 ctx.format.generateNotes([
-                    `Ketik ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} list`)} untuk melihat daftar.`
+                    `Ketik: ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} list`)} untuk daftar`
                 ])
             );
 
@@ -30,11 +30,11 @@ module.exports = {
                 "self"
             ];
             const mode = input.toLowerCase();
-            if (!validModes.includes(mode)) return await ctx.reply(ctx.format.info(`Mode "${input}" tidak valid!`));
+            if (!validModes.includes(mode)) return await ctx.reply(ctx.format.info(`Mode "${input}" tidak valid.`));
             const botDb = ctx.db.bot;
             botDb.mode = mode;
             botDb.save();
-            await ctx.reply(ctx.format.info(`Berhasil mengubah mode ke ${input}!`));
+            await ctx.reply(ctx.format.info(`Mode diubah ke ${input}.`));
         } catch (error) {
             await ctx.helper.handleError(ctx, error);
         }

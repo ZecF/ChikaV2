@@ -10,24 +10,24 @@ module.exports = {
                 text: `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                     `${ctx.format.generateCmdExample(ctx.used, "@6281234567891 8")}\n` +
                     ctx.format.generateNotes([
-                        "Balas/quote pesan untuk menjadikan pengirim sebagai akun target."
+                        "Balas/quote pesan target."
                     ]),
                 mentions: ["6281234567891@s.whatsapp.net"]
             });
-
         const senderDb = ctx.db.user;
-        if (ctx.sender.isOwner() || senderDb.premium) return await ctx.reply(ctx.format.info("Koin tak terbatas tidak dapat ditransfer!"));
-        if (coinAmount <= 0) return await ctx.reply(ctx.format.info("Jumlah koin tidak boleh kurang dari atau sama dengan 0!"));
-        if (senderDb.coin < coinAmount) return await ctx.reply(ctx.format.info("Koin Anda tidak mencukupi untuk transfer ini!"));
-        if (ctx.checkOwner(target.id)) return await ctx.reply(ctx.format.info("Tidak dapat mentransfer koin ke akun owner!"));
-
+        const adminFeePercent = 2;
+        const adminFee = ctx.sender.isOwner() || senderDb.premium ? 0 : Math.ceil((coinAmount * adminFeePercent) / 100);
+        const totalDeduction = coinAmount + adminFee;
+        if (coinAmount <= 0) return await ctx.reply(ctx.format.info("Jumlah harus > 0."));
+        if (senderDb.coin < totalDeduction) return await ctx.reply(ctx.format.info(`${config.msg.coin} ${adminFee > 0 ? `Butuh: ${totalDeduction} (transfer ${coinAmount} + admin ${adminFee})` : ""}`.trim()));
+        if (ctx.helper.areJidsSameUser(target.id, ctx.me.lid)) return await ctx.reply(ctx.format.info("Tidak bisa transfer ke bot."));
         try {
             const targetDb = ctx.getDb("users", target.id);
             targetDb.coin += coinAmount;
-            senderDb.coin -= coinAmount;
+            senderDb.coin -= totalDeduction;
             targetDb.save();
             senderDb.save();
-            await ctx.reply(ctx.format.info(`Berhasil mentransfer ${coinAmount} koin ke pengguna itu!`));
+            await ctx.reply(ctx.format.info(`Transfer ${coinAmount} koin berhasil. ${adminFee > 0 ? `Admin ${adminFeePercent}%: ${adminFee} koin` : "Admin: Gratis"}`.trim()));
         } catch (error) {
             await ctx.helper.handleError(ctx, error);
         }

@@ -1,35 +1,34 @@
 module.exports = {
     name: "leaderboard",
-    aliases: ["lb", "peringkat"],
+    aliases: ["lb", "peringkat", "rank"],
     category: "profile",
     code: async (ctx) => {
         const users = ctx.db.users.getAll();
-        const senderLid = ctx.sender.lid;
-        const senderId = ctx.getId(senderLid);
+        const senderJid = ctx.sender.jid;
+        const senderId = ctx.getId(senderJid);
 
         const leaderboardData = users.map(user => ({
             id: user.id,
             pushName: user.pushName,
-            level: user.level || 0,
             winGame: user.winGame || 0
-        })).sort((a, b) => b.winGame - a.winGame || b.level - a.level);
+        })).sort((a, b) => b.winGame - a.winGame);
 
-        const userRank = leaderboardData.findIndex(user => ctx.helper.areJidsSameUser(user.id, senderLid)) + 1;
+        const userRank = leaderboardData.findIndex(user => ctx.helper.areJidsSameUser(user.id, senderJid)) + 1;
         const topUsers = leaderboardData.slice(0, 10);
         let resultText = "";
         const mentions = [];
 
         topUsers.forEach((user, i) => {
-            const isSelf = ctx.helper.areJidsSameUser(user.id, senderLid);
+            const isSelf = ctx.helper.areJidsSameUser(user.id, senderJid);
             const displayUser = isSelf ? `@${senderId}` : (user.pushName || ctx.getId(user.id));
-            if (isSelf) mentions.push(senderLid);
-            resultText += `❖ ${displayUser} - Menang: ${user.winGame}, Level: ${user.level}, Peringkat: ${i + 1}\n`;
+            if (isSelf) mentions.push(senderJid);
+            resultText += `❖ ${displayUser} - Menang: ${user.winGame}, Rank: ${i + 1}\n`;
         });
 
         if (userRank > 10) {
             const userStats = leaderboardData[userRank - 1];
-            resultText += `❖ @${senderId} - Menang: ${userStats.winGame}, Level: ${userStats.level}, Peringkat: ${userRank}\n`;
-            mentions.push(senderLid);
+            resultText += `❖ @${senderId} - Menang: ${userStats.winGame}, Rank: ${userRank}\n`;
+            mentions.push(senderJid);
         }
 
         await ctx.reply({

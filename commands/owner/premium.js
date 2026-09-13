@@ -13,16 +13,14 @@ module.exports = [{
                 text: `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                     `${ctx.format.generateCmdExample(ctx.used, "@6281234567891 8 -s")}\n` +
                     `${ctx.format.generateNotes([
-                        "Balas/quote pesan untuk menjadikan pengirim sebagai akun target."
+                        "Balas/quote pesan target."
                     ])}\n` +
                     ctx.format.generatesFlagInfo({
-                        "-s": "Tetap diam dengan tidak menyiarkan ke akun target"
+                        "-s": "Diam, tanpa notifikasi"
                     }),
                 mentions: ["6281234567891@s.whatsapp.net"]
             });
-
-        if (daysAmount && daysAmount <= 0) return await ctx.reply(ctx.format.info("Durasi premium (dalam hari) harus diisi dan lebih dari 0!"));
-
+        if (daysAmount && daysAmount <= 0) return await ctx.reply(ctx.format.info("Durasi premium harus > 0 hari."));
         try {
             const flag = ctx.flag({
                 silent: {
@@ -36,13 +34,13 @@ module.exports = [{
             if (daysAmount && daysAmount > 0) {
                 targetDb.premiumExpiration = Date.now() + (daysAmount * 24 * 60 * 60 * 1000);
                 targetDb.save();
-                if (!flag.silent && !config.system.restrict) await ctx.sendMessage(target.id, ctx.format.info(`Anda telah ditambahkan sebagai pengguna premium oleh owner selama ${daysAmount} hari!`));
-                await ctx.reply(ctx.format.info(`Berhasil menambahkan premium selama ${daysAmount} hari kepada pengguna itu!`));
+                if (!flag.silent && !config.system.restrict) await ctx.sendMessage(target.id, ctx.format.info(`Anda premium ${daysAmount} hari dari owner.`));
+                await ctx.reply(ctx.format.info(`Premium ${daysAmount} hari ditambahkan.`));
             } else {
                 targetDb.premiumExpiration = null;
                 targetDb.save();
-                if (!flag.silent && !config.system.restrict) await ctx.sendMessage(target.id, ctx.format.info("Anda telah ditambahkan sebagai pengguna premium selamanya oleh owner!"));
-                await ctx.reply(ctx.format.info("Berhasil menambahkan premium selamanya kepada pengguna itu!"));
+                if (!flag.silent && !config.system.restrict) await ctx.sendMessage(target.id, ctx.format.info("Anda premium selamanya dari owner."));
+                await ctx.reply(ctx.format.info("Premium selamanya ditambahkan."));
             }
         } catch (error) {
             await ctx.helper.handleError(ctx, error);
@@ -62,20 +60,18 @@ module.exports = [{
                 text: `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                     `${ctx.format.generateCmdExample(ctx.used, "@6281234567891 -s")}\n` +
                     `${ctx.format.generateNotes([
-                        "Balas/quote pesan untuk menjadikan pengirim sebagai akun target."
+                        "Balas/quote pesan target."
                     ])}\n` +
                     ctx.format.generatesFlagInfo({
-                        "-s": "Tetap diam dengan tidak menyiarkan ke akun target"
+                        "-s": "Diam, tanpa notifikasi"
                     }),
                 mentions: ["6281234567891@s.whatsapp.net"]
             });
-
         try {
             const targetDb = ctx.getDb("users", target.id);
             targetDb.premium = false;
             targetDb.premiumExpiration = null;
             targetDb.save();
-
             const flag = ctx.flag({
                 silent: {
                     type: "boolean",
@@ -83,8 +79,8 @@ module.exports = [{
                     default: false
                 }
             });
-            if (!flag.silent && !config.system.restrict) await ctx.sendMessage(target.id, ctx.format.info("Anda telah dihapus sebagai pengguna premium oleh owner!"));
-            await ctx.reply(ctx.format.info("Berhasil menghapuskan premium kepada pengguna itu!"));
+            if (!flag.silent && !config.system.restrict) await ctx.sendMessage(target.id, ctx.format.info("Premium Anda dicabut owner."));
+            await ctx.reply(ctx.format.info("Premium dicabut."));
         } catch (error) {
             await ctx.helper.handleError(ctx, error);
         }

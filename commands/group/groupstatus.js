@@ -29,16 +29,13 @@ module.exports = {
             }
             await ctx.reply({
                 ...content,
-                contextInfo: {
-                    statusAudienceMetadata: {
-                        audienceType: 1,
-                        listName: ctx.sender.pushName,
-                        listEmoji: "🏷️"
-                    }
+                statusAudience: {
+                    listName: ctx.sender.pushName,
+                    listEmoji: "🏷️"
                 },
                 groupStatus: true
             });
-            await ctx.reply(ctx.format.info("Group status berhasil dikirim!"));
+            await ctx.reply(ctx.format.info("Group status terkirim."));
         } catch (error) {
             await ctx.helper.handleError(ctx, error, false);
         }

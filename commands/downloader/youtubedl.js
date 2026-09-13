@@ -74,7 +74,7 @@ module.exports = [{
                 `${ctx.format.generateCmdExample(ctx.used, "https://www.youtube.com/watch?v=0Uhh62MUEic -d -r 720")}\n` +
                 ctx.format.generatesFlagInfo({
                     "-d": "Kirim sebagai dokumen",
-                    "-r": "Resolusi video (tersedia: 240, 360, 480, 720, 1080 | default: 360)"
+                    "-r": "Resolusi: 240, 360, 480, 720, 1080 (default: 360)"
                 })
             );
         if (!ctx.helper.isUrl(url)) return await ctx.reply(ctx.format.info(config.msg.invalidUrl));

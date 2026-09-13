@@ -13,14 +13,14 @@ module.exports = [{
                 text: `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                     `${ctx.format.generateCmdExample(ctx.used, "@6281234567891")}\n` +
                     ctx.format.generateNotes([
-                        "Balas/quote pesan untuk menjadikan pengirim sebagai akun target."
+                        "Balas/quote pesan target."
                     ]),
                 mentions: ["6281234567891@s.whatsapp.net"]
             });
-        if (await ctx.group().isOwner(target.id)) return await ctx.reply(ctx.format.info("Dia adalah owner grup!"));
+        if (await ctx.group().isOwner(target.id)) return await ctx.reply(ctx.format.info("Dia owner grup."));
         try {
             await ctx.group().promote(target.id);
-            await ctx.reply(ctx.format.info("Berhasil ditingkatkan dari anggota menjadi admin!"));
+            await ctx.reply(ctx.format.info("Jadi admin."));
         } catch (error) {
             await ctx.helper.handleError(ctx, error);
         }
@@ -40,14 +40,14 @@ module.exports = [{
                 text: `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                     `${ctx.format.generateCmdExample(ctx.used, "@6281234567891")}\n` +
                     ctx.format.generateNotes([
-                        "Balas/quote pesan untuk menjadikan pengirim sebagai akun target."
+                        "Balas/quote pesan target."
                     ]),
                 mentions: ["6281234567891@s.whatsapp.net"]
             });
-        if (!await ctx.group().isAdmin(target.id)) return await ctx.reply(ctx.format.info("Dia adalah anggota!"));
+        if (await ctx.group().isOwner(target.id)) return await ctx.reply(ctx.format.info("Dia anggota."));
         try {
             await ctx.group().demote(target.id);
-            await ctx.reply(ctx.format.info("Berhasil diturunkan dari admin menjadi anggota!"));
+            await ctx.reply(ctx.format.info("Jadi anggota."));
         } catch (error) {
             await ctx.helper.handleError(ctx, error);
         }

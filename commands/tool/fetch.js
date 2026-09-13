@@ -22,7 +22,7 @@ module.exports = {
                 validateStatus: () => true
             });
             const contentType = response?.headers?.["content-type"] || "";
-            const data = response?.data;
+            let data = response?.data;
 
             if (/webp/.test(contentType)) {
                 await ctx.reply({
@@ -59,11 +59,7 @@ module.exports = {
                     mimetype: contentType
                 });
             } else {
-                await ctx.reply(ctx.format.monospace(util.inspect(data, {
-                    depth: null,
-                    maxArrayLength: null,
-                    maxStringLength: null
-                })));
+                await ctx.reply(Buffer.from(data).toString("utf-8"));
             }
         } catch (error) {
             await ctx.helper.handleError(ctx, error);

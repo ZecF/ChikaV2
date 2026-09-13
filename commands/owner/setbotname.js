@@ -14,7 +14,7 @@ module.exports = {
             );
         try {
             await ctx.core.updateProfileName(input);
-            await ctx.reply(ctx.format.info("Berhasil mengubah nama grup!"));
+            await ctx.reply(ctx.format.info("Nama bot diubah."));
         } catch (error) {
             await ctx.helper.handleError(ctx, error);
         }

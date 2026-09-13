@@ -29,10 +29,10 @@ module.exports = {
     name: "maths",
     category: "game",
     code: async (ctx) => {
-        if (sessions.has(ctx.id)) return await ctx.reply(ctx.format.info("Sesi permainan sedang berjalan!"));
+        if (sessions.has(ctx.id)) return await ctx.reply(ctx.format.info("Sesi sedang berjalan."));
 
         try {
-            const input = ctx.args?.[0] && levels.hasOwnProperty(ctx.args[0]) ? ctx.args[0] : "random";
+            const input = ctx.args?.[0] && levels.hasOwnProperty(ctx.args[0]) ? ctx.args[0] : "";
             const apiUrl = ctx.api.createUrl("siputzx", "/api/games/maths", {
                 level: input
             });
@@ -51,7 +51,7 @@ module.exports = {
                     "\n" +
                     `❖ ${ctx.format.bold("Level")}: ${levels[result.mode]}\n` +
                     `❖ ${ctx.format.bold("Bonus")}: ${game.coin} koin\n` +
-                    `❖ ${ctx.format.bold("Batas waktu")}: ${ctx.format.convertMsToDuration(game.timeout)}`,
+                    `❖ ${ctx.format.bold("Waktu")}: ${ctx.format.convertMsToDuration(game.timeout)}`,
                 buttons: [{
                     text: "Menyerah",
                     id: `surrender_${ctx.used.command}`
@@ -86,12 +86,11 @@ module.exports = {
             collector.on("collect", async (collCtx) => {
                 const participantAnswer = collCtx.msg.body?.toLowerCase();
                 const participantDb = collCtx.db.user;
-                const isUnlimited = collCtx.sender.isOwner() || participantDb?.premium;
 
                 if (participantAnswer === game.answer) {
                     sessions.delete(ctx.id);
                     collector.stop();
-                    if (!isUnlimited) participantDb.coin += game.coin;
+                    participantDb.coin += game.coin;
                     participantDb.winGame += 1;
                     participantDb.save();
                     await collCtx.reply({
@@ -101,8 +100,11 @@ module.exports = {
                 } else if (participantAnswer === `surrender_${ctx.used.command}`) {
                     sessions.delete(ctx.id);
                     collector.stop();
+                    participantDb.coin -= game.coin;
+                    participantDb.winGame -= 1;
+                    participantDb.save();
                     await collCtx.reply({
-                        text: ctx.format.info(`Anda menyerah! Jawaban: ${ctx.format.ucwords(game.answer)}`),
+                        text: ctx.format.info(`Menyerah! Jawaban: ${ctx.format.ucwords(game.answer)}`),
                         buttons: playAgain
                     });
                 }
@@ -111,6 +113,10 @@ module.exports = {
             collector.on("end", async () => {
                 if (sessions.has(ctx.id)) {
                     sessions.delete(ctx.id);
+                    const userDb = ctx.db.user;
+                    userDb.coin -= game.coin;
+                    userDb.winGame -= 1;
+                    userDb.save();
                     await ctx.reply({
                         text: ctx.format.info(`Waktu habis! Jawaban: ${ctx.format.ucwords(game.answer)}`),
                         buttons: playAgain

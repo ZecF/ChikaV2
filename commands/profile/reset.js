@@ -8,14 +8,14 @@ module.exports = {
         const input = ctx.args[0];
         if (input === "y") {
             const usersDb = ctx.db.users;
-            usersDb.reset(user => user.id === ctx.sender.lid);
-            return await ctx.reply(ctx.format.info("Database Anda telah berhasil direset!"));
+            usersDb.reset(user => user.id === ctx.sender.jid);
+            return await ctx.reply(ctx.format.info("Database direset."));
         } else if (input === "n") {
-            return await ctx.reply(ctx.format.info("Proses reset database telah dibatalkan."));
+            return await ctx.reply(ctx.format.info("Reset dibatalkan."));
         }
 
         await ctx.reply({
-            text: ctx.format.info("Yakin ingin mereset database Anda? Tindakan ini akan menghapus semua data yang tersimpan dan tidak dapat dipulihkan."),
+            text: ctx.format.info("Reset database? Data akan hilang permanen."),
             buttons: [{
                 text: "Ya",
                 id: `${ctx.used.prefix + ctx.used.command} y`

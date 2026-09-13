@@ -23,8 +23,8 @@ module.exports = {
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                 `${ctx.format.generateCmdExample(ctx.used, "one last kiss - hikaru utada -i 8 -s spotify")}\n` +
                 ctx.format.generatesFlagInfo({
-                    "-i <number>": "Pilihan pada data indeks",
-                    "-s <text>": "Sumber untuk memutar lagu (tersedia: spotify, youtube | default: youtube)"
+                    "-i <number>": "Indeks hasil",
+                    "-s <text>": "Sumber: spotify, youtube (default: youtube)"
                 })
             );
 
@@ -65,7 +65,7 @@ module.exports = {
                 downloadResult = (await ctx.request.get(downloadApiUrl)).data.result.url;
             }
 
-            if (config.system.autoTypingOnCmd) await ctx.simulateTyping()
+            if (config.system.autoTypingOnCmd) await ctx.simulateTyping();
             await ctx.reply({
                 audio: {
                     url: downloadResult

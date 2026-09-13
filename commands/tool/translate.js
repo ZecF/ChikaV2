@@ -17,7 +17,7 @@ module.exports = {
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                 `${ctx.format.generateCmdExample(ctx.used, "en halo, dunia!")}\n` +
                 ctx.format.generateNotes([
-                    "Gunakan kode bahasa 2 huruf, periksa daftar lengkapnya di Google. (contoh: id, en, ja, ko, ar, zh-cn)"
+                    "Kode bahasa, contoh: id, en, ja, ko, ar, zh-cn"
                 ])
             );
 

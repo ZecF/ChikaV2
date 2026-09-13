@@ -21,7 +21,7 @@ module.exports = (bot) => {
                 senderDb.lastSentMsg[key] = now;
                 senderDb.save();
                 return await ctx.reply({
-                    text: ctx.format.info(`${msg} — selanjutnya akan berupa reaksi emoji ${ctx.format.inlineCode(reaction)}.`),
+                    text: ctx.format.info(`${msg} (berikutnya: reaksi ${ctx.format.inlineCode(reaction)})`),
                     buttons
                 });
             } else {
@@ -32,9 +32,21 @@ module.exports = (bot) => {
         const command = [...ctx.bot.cmd.values()].find(cmd => [cmd.name, ...(cmd?.aliases || [])].includes(ctx.used.command));
         if (command) {
             const perms = command.permissions || {};
+            if (perms.restrict && config.system.restrict) return restrict("restrict", config.msg.restrict, "🚫");
+            if (perms.owner && !isOwner) return restrict("owner", config.msg.owner, "👑");
+            if (perms.premium && !senderDb.premium && !isOwner)
+                return restrict("premium", config.msg.premium, "💎", [{
+                    text: "Harga Premium",
+                    id: `${ctx.used.prefix}price`
+                }, {
+                    text: "Hubungi Owner",
+                    id: `${ctx.used.prefix}owner`
+                }]);
             if (perms.admin && isGroup && !isAdmin && !isOwner) return restrict("admin", config.msg.admin, "🛡️");
             if (perms.botAdmin && isGroup && !await ctx.group(ctx.id, !config.system.selfReply).isBotAdmin()) return restrict("botAdmin", config.msg.botAdmin, "🤖");
-            if (perms.coin && config.system.useCoin && !isOwner && !senderDb.premium) {
+            if (perms.group && isPrivate) return restrict("group", config.msg.group, "👥");
+            if (perms.private && isGroup) return restrict("private", config.msg.private, "📩");
+            if (perms.coin && config.system.useCoin) {
                 if (senderDb.coin >= perms.coin) {
                     senderDb.coin -= perms.coin;
                     senderDb.save();
@@ -45,18 +57,6 @@ module.exports = (bot) => {
                     }]);
                 }
             }
-            if (perms.group && isPrivate) return restrict("group", config.msg.group, "👥");
-            if (perms.owner && !isOwner) return restrict("owner", config.msg.owner, "👑");
-            if (perms.premium && !senderDb.premium && !isOwner)
-                return restrict("premium", config.msg.premium, "💎", [{
-                    text: "Harga Premium",
-                    id: `${ctx.used.prefix}price`
-                }, {
-                    text: "Hubungi Owner",
-                    id: `${ctx.used.prefix}owner`
-                }]);
-            if (perms.private && isGroup) return restrict("private", config.msg.private, "📩");
-            if (perms.restrict && config.system.restrict) return restrict("restrict", config.msg.restrict, "🚫");
         }
 
         if (senderDb.banned && ctx.used.command !== "owner")
@@ -64,7 +64,7 @@ module.exports = (bot) => {
                 text: "Hubungi Owner",
                 id: `${ctx.used.prefix}owner`
             }]);
-        if (new Cooldown(ctx, config.system.cooldown, "multi").onCooldown && !isOwner && !senderDb.premium) return restrict("cooldown", config.msg.cooldown, "💤");
+        if (new Cooldown(ctx, config.system.cooldown).onCooldown && !isOwner && !senderDb.premium) return restrict("cooldown", config.msg.cooldown, "💤");
         if (groupDb.option?.gamerestrict && isGroup && !isOwner && !isAdmin && ctx.bot.cmd.get(ctx.used.command).category === "game") return restrict("gamerestrict", config.msg.gamerestrict, "🎮");
         if (config.system.privatePremiumOnly && isPrivate && !isOwner && !senderDb.premium && !["price", "owner"].includes(ctx.used.command))
             return restrict("privatePremiumOnly", config.msg.privatePremiumOnly, "💎", [{
@@ -78,8 +78,8 @@ module.exports = (bot) => {
             const now = Date.now();
             const duration = 24 * 60 * 60 * 1000;
             let isMember = senderDb.botGroupMembership?.isMember;
-            if (isMember === undefined || (now - (senderDb.botGroupMembership?.timestamp || 0)) > duration) {
-                isMember = await ctx.group(config.bot.groupJid).isMemberExist(ctx.sender.lid);
+            if (!isMember && (now - (senderDb.botGroupMembership?.timestamp || 0)) > duration) {
+                isMember = await ctx.group(config.bot.groupJid).isMemberExist(ctx.sender.jid);
                 senderDb.botGroupMembership = {
                     isMember,
                     timestamp: now

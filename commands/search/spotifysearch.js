@@ -15,7 +15,7 @@ module.exports = {
 
         if (ctx.helper.isUrl(input))
             return await ctx.reply({
-                text: ctx.format.info("Input berupa URL, gunakan tombol download di bawah:"),
+                text: ctx.format.info("Input URL, gunakan tombol download:"),
                 buttons: [{
                     text: "Download",
                     id: `${ctx.used.prefix}spotifydl ${input}`
@@ -30,7 +30,7 @@ module.exports = {
             const resultText = result.map(res =>
                 `❖ ${ctx.format.bold("Judul")}: ${res.title}\n` +
                 `❖ ${ctx.format.bold("Artis")}: ${res.artist}\n` +
-                `❖ ${ctx.format.bold("URL")}: ${res.url}`
+                `❖ ${ctx.format.bold("URL")}: ${res.spotifyUrl}`
             ).join("\n\n");
             await ctx.reply(resultText.trim() || ctx.format.info(config.msg.notFound));
         } catch (error) {

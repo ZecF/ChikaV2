@@ -1,4 +1,4 @@
-const { AIRich } = require("baileys");
+const { MB } = require("baileys");
 
 module.exports = {
     name: "chatgpt",
@@ -14,7 +14,7 @@ module.exports = {
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                 `${ctx.format.generateCmdExample(ctx.used, "apa itu evangelion?")}\n` +
                 ctx.format.generateNotes([
-                    `Ketik ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} reset`)} untuk mereset riwayat percakapan.`
+                    `Ketik: ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} reset`)} untuk reset riwayat`
                 ])
             );
 
@@ -22,7 +22,7 @@ module.exports = {
         if (input.toLowerCase() === "reset") {
             senderDb.sessionId.chatgpt = [];
             senderDb.save();
-            return await ctx.reply(ctx.format.info("Riwayat percakapan berhasil direset!"));
+            return await ctx.reply(ctx.format.info("Riwayat direset."));
         }
 
         try {
@@ -37,7 +37,9 @@ module.exports = {
                 senderDb.sessionId.chatgpt = [result.chatId, result.sessionId];
                 senderDb.save();
             }
-            await new AIRich(ctx.core).addText(result.reply).send(ctx.id);
+            await new MB.AIRich(ctx.core).addText(result.reply).send(ctx.id, {
+                quoted: ctx.msg
+            });
         } catch (error) {
             senderDb.sessionId.chatgpt = [];
             senderDb.save();

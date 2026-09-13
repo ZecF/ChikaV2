@@ -17,7 +17,7 @@ module.exports = {
         try {
             const urlCode = new URL(url).pathname.split("/").pop();
             await ctx.groups.acceptInvite(urlCode);
-            await ctx.reply(ctx.format.info("Berhasil bergabung dengan grup!"));
+            await ctx.reply(ctx.format.info("Berhasil join grup."));
         } catch (error) {
             await ctx.helper.handleError(ctx, error);
         }

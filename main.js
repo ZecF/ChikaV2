@@ -52,8 +52,6 @@ const bot = new Client({
             users: {
                 pushName: "Unknown",
                 coin: 100,
-                level: 0,
-                xp: 0,
                 winGame: 0,
                 premium: false,
                 premiumExpiration: null,
@@ -86,7 +84,7 @@ const bot = new Client({
             }
         }
     },
-    owner: [config.owner.id, ...config.owner.co.map(co => co.id)].filter(Boolean)
+    owner: [...config.owner.id, ...config.owner.co.flatMap(co => co.id)].filter(Boolean)
 });
 
 Events(bot);

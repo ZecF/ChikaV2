@@ -5,7 +5,7 @@ module.exports = {
     aliases: ["cc"],
     category: "game",
     code: async (ctx) => {
-        if (sessions.has(ctx.id)) return await ctx.reply(ctx.format.info("Sesi permainan sedang berjalan!"));
+        if (sessions.has(ctx.id)) return await ctx.reply(ctx.format.info("Sesi sedang berjalan."));
 
         try {
             const mapel = {
@@ -43,10 +43,10 @@ module.exports = {
                         return `${answer.toUpperCase()}. ${answers[answer]}`;
                     }).join("\n")}\n` +
                     "\n" +
-                    `❖ ${ctx.format.bold("Mata Pelajaran")}: ${mapel[input]}\n` +
+                    `❖ ${ctx.format.bold("Mapel")}: ${mapel[input]}\n` +
                     `❖ ${ctx.format.bold("Bonus")}: ${game.coin} koin\n` +
-                    `❖ ${ctx.format.bold("Batas waktu")}: ${ctx.format.convertMsToDuration(game.timeout)}\n` +
-                    `❖ ${ctx.format.bold("Cara menjawab")}: Ketik hanya pilihan jawabannya saja tanpa mengetik jawaban lengkap, misalnya: A, B, dan seterusnya.`,
+                    `❖ ${ctx.format.bold("Waktu")}: ${ctx.format.convertMsToDuration(game.timeout)}\n` +
+                    `❖ ${ctx.format.bold("Jawab")}: Ketik A/B/C/...`,
                 buttons: [{
                     text: "Menyerah",
                     id: `surrender_${ctx.used.command}`
@@ -71,13 +71,13 @@ module.exports = {
                 text: "Main Lagi",
                 id: `${ctx.used.prefix + ctx.used.command} ${input}`
             }, {
-                text: "Daftar Mata Pelajaran",
+                text: "Daftar Mapel",
                 sections: [{
-                    title: "Pilih Mata Pelajaran",
+                    title: "Pilih Mapel",
                     highlight_label: "🌕",
                     rows: Object.keys(mapel).map(key => ({
                         title: key.toUpperCase(),
-                        description: `Klik untuk memainkan mata pelajaran ${mapel[key]}`,
+                        description: `Klik untuk memainkan mapel ${mapel[key]}`,
                         id: `${ctx.used.prefix + ctx.used.command} ${key}`
                     }))
                 }]
@@ -86,13 +86,12 @@ module.exports = {
             collector.on("collect", async (collCtx) => {
                 const participantAnswer = collCtx.msg.body?.toLowerCase();
                 const participantDb = collCtx.db.user;
-                const isUnlimited = collCtx.sender.isOwner() || participantDb?.premium;
 
-                if (game.wrongAnswered.includes(collCtx.sender.lid)) return;
+                if (game.wrongAnswered.includes(collCtx.sender.jid)) return;
                 if (participantAnswer === game.answerKey) {
                     sessions.delete(ctx.id);
                     collector.stop();
-                    if (!isUnlimited) participantDb.coin += game.coin;
+                    participantDb.coin += game.coin;
                     participantDb.winGame += 1;
                     participantDb.save();
                     await collCtx.reply({
@@ -102,19 +101,29 @@ module.exports = {
                 } else if (participantAnswer === `surrender_${ctx.used.command}`) {
                     sessions.delete(ctx.id);
                     collector.stop();
+                    participantDb.coin -= game.coin;
+                    participantDb.winGame -= 1;
+                    participantDb.save();
                     await collCtx.reply({
-                        text: ctx.format.info(`Anda menyerah! Jawaban: ${game.answer} (${game.answerKey.toUpperCase()})`),
+                        text: ctx.format.info(`Menyerah! Jawaban: ${game.answer} (${game.answerKey.toUpperCase()})`),
                         buttons: playAgain
                     });
                 } else {
-                    game.wrongAnswered.push(collCtx.sender.lid);
-                    await collCtx.reply(ctx.format.info(`Salah!`));
+                    game.wrongAnswered.push(collCtx.sender.jid);
+                    participantDb.coin -= game.coin;
+                    participantDb.winGame -= 1;
+                    participantDb.save();
+                    await collCtx.reply(ctx.format.info("Salah!"));
                 }
             });
 
             collector.on("end", async () => {
                 if (sessions.has(ctx.id)) {
                     sessions.delete(ctx.id);
+                    const userDb = ctx.db.user;
+                    userDb.coin -= game.coin;
+                    userDb.winGame -= 1;
+                    userDb.save();
                     await ctx.reply({
                         text: ctx.format.info(`Waktu habis! Jawaban: ${game.answer} (${game.answerKey.toUpperCase()})`),
                         buttons: playAgain

@@ -14,10 +14,10 @@ module.exports = {
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                 ctx.format.generateCmdExample(ctx.used, "get in the fucking robot, shinji!")
             );
-        if (input.length > 1000) return await ctx.reply(ctx.format.info("Maksimal 1000 karakter!"));
+        if (input.length > 1000) return await ctx.reply(ctx.format.info("Maks 1000 karakter."));
         try {
             const isQuoted = !ctx.text && ctx.quoted;
-            const profilePictureUrl = await ctx.core.profilePictureUrl(isQuoted ? ctx.quoted?.sender : ctx.sender.lid).catch(() => "https://placehold.net/avatar.png");
+            const profilePictureUrl = await ctx.core.profilePictureUrl(isQuoted ? ctx.quoted?.sender.jid : ctx.sender.jid).catch(() => "https://placehold.net/avatar.png");
             const result = (await ctx.request.post("https://qwa.eeq.my.id/api/generate", {
                 sender_name: isQuoted ? ctx.quoted?.pushName : ctx.sender.pushName,
                 sender_number: ctx.getId(ctx.sender.jid),

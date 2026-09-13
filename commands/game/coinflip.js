@@ -9,16 +9,15 @@ module.exports = {
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                 `${ctx.format.generateCmdExample(ctx.used, "melati")}\n` +
                 ctx.format.generateNotes([
-                    "Sisi koin tersedia garuda atau melati, sama seperti koin Rp. 500."
+                    "Tebak: garuda/melati"
                 ])
             );
 
         const senderDb = ctx.db.user;
-        const isUnlimited = ctx.sender.isOwner() || senderDb.premium;
-        if (!isUnlimited && senderDb.coin < 500) return await ctx.reply(ctx.format.info("Koin Anda tidak cukup! Minimal memiliki 500 koin untuk bermain."));
+        if (senderDb.coin < 500) return await ctx.reply(ctx.format.info(`${config.msg.coin} Butuh: 500`));
 
         try {
-            const winRate = 0.40;
+            const winRate = ctx.sender.isOwner() || senderDb.premium ? 0.60 : 0.20;
             const isWin = Math.random() < winRate;
             const flip = isWin ? input : (input === "garuda" ? "melati" : "garuda");
             let responseText = "";
@@ -26,18 +25,18 @@ module.exports = {
 
             if (isWin) {
                 const prize = 1000;
-                if (!isUnlimited) senderDb.coin += prize;
+                senderDb.coin += prize;
                 responseText = "Selamat!";
                 prizeText = `+${prize} koin`;
             } else {
                 const forfeit = 500;
-                if (!isUnlimited) senderDb.coin -= forfeit;
+                senderDb.coin -= forfeit;
                 responseText = "Kalah!";
                 prizeText = `-${forfeit} koin`;
             }
 
-            if (!isUnlimited) senderDb.save();
-            await ctx.reply(ctx.format.info(`${responseText} Koin jatuh di sisi ${flip}. ${prizeText}`));
+            senderDb.save();
+            await ctx.reply(ctx.format.info(`${responseText} Koin: ${flip}. ${prizeText}`));
         } catch (error) {
             await ctx.helper.handleError(ctx, error);
         }

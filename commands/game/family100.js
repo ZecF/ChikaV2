@@ -7,7 +7,7 @@ module.exports = {
         group: true
     },
     code: async (ctx) => {
-        if (sessions.has(ctx.id)) return await ctx.reply(ctx.format.info("Sesi permainan sedang berjalan!"));
+        if (sessions.has(ctx.id)) return await ctx.reply(ctx.format.info("Sesi sedang berjalan."));
 
         try {
             const apiUrl = ctx.api.createUrl("siputzx", "/api/games/family100");
@@ -27,9 +27,9 @@ module.exports = {
             await ctx.reply({
                 text: `✦ — ${result.soal}\n` +
                     "\n" +
-                    `❖ ${ctx.format.bold("Bonus")}: ${game.coin.answered} koin untuk 1 jawaban benar, ${game.coin.allAnswered} koin untuk semua jawaban benar\n` +
+                    `❖ ${ctx.format.bold("Bonus")}: ${game.coin.answered} koin perjawaban, ${game.coin.allAnswered} koin jika semua\n` +
                     `❖ ${ctx.format.bold("Jumlah jawaban")}: ${game.answers.size}\n` +
-                    `❖ ${ctx.format.bold("Batas waktu")}: ${ctx.format.convertMsToDuration(game.timeout)}`,
+                    `❖ ${ctx.format.bold("Waktu")}: ${ctx.format.convertMsToDuration(game.timeout)}`,
                 buttons: [{
                     text: "Menyerah",
                     id: `surrender_${ctx.used.command}`
@@ -53,29 +53,25 @@ module.exports = {
             collector.on("collect", async (collCtx) => {
                 const participantAnswer = collCtx.msg.body?.toLowerCase();
                 const participantDb = collCtx.db.user;
-                const isUnlimited = collCtx.sender.isOwner() || participantDb?.premium;
 
                 if (game.answers.has(participantAnswer)) {
                     game.answers.delete(participantAnswer);
-                    game.participants.add(collCtx.sender.lid);
-                    if (!isUnlimited) {
-                        participantDb.coin += game.coin.answered;
-                        participantDb.save();
-                    }
-                    await collCtx.reply(ctx.format.info(`${ctx.format.ucwords(participantAnswer)} benar! Jawaban tersisa: ${game.answers.size}`));
+                    game.participants.add(collCtx.sender.jid);
+                    participantDb.coin += game.coin.answered;
+                    participantDb.save();
+                    await collCtx.reply(ctx.format.info(`${ctx.format.ucwords(participantAnswer)} benar! Sisa: ${game.answers.size}`));
 
                     if (game.answers.size === 0) {
                         sessions.delete(ctx.id);
                         collector.stop();
                         for (const participant of game.participants) {
                             const allParticipantDb = ctx.getDb("users", participant);
-                            const isAllUnlimited = collCtx.checkOwner(participant) || allParticipantDb?.premium;
-                            if (!isAllUnlimited) allParticipantDb.coin += game.coin.allAnswered;
+                            allParticipantDb.coin += game.coin.allAnswered;
                             allParticipantDb.winGame += 1;
                             allParticipantDb.save();
                         }
                         await collCtx.reply({
-                            text: ctx.format.info(`Selamat, semua jawaban telah terjawab! Setiap anggota yang menjawab +${game.coin.allAnswered} koin.`),
+                            text: ctx.format.info(`Semua terjawab! +${game.coin.allAnswered} koin per penjawab.`),
                             buttons: playAgain
                         });
                     }
@@ -83,8 +79,11 @@ module.exports = {
                     const remaining = [...game.answers].map(ctx.format.ucwords).join(", ").replace(/, ([^,]*)$/, ", dan $1");
                     sessions.delete(ctx.id);
                     collector.stop();
+                    participantDb.coin -= game.coin.answered;
+                    participantDb.winGame -= 1;
+                    participantDb.save();
                     await collCtx.reply({
-                        text: ctx.format.info(`Anda menyerah! Jawaban yang belum terjawab: ${remaining}`),
+                        text: ctx.format.info(`Menyerah! Belum terjawab: ${remaining}`),
                         buttons: playAgain
                     });
                 }
@@ -94,8 +93,12 @@ module.exports = {
                 const remaining = [...game.answers].map(ctx.format.ucwords).join(", ").replace(/, ([^,]*)$/, ", dan $1");
                 if (sessions.has(ctx.id)) {
                     sessions.delete(ctx.id);
+                    const userDb = ctx.db.user;
+                    userDb.coin -= game.coin.answered;
+                    userDb.winGame -= 1;
+                    userDb.save();
                     await ctx.reply({
-                        text: ctx.format.info(`Waktu habis! Jawaban yang belum terjawab: ${remaining}`),
+                        text: ctx.format.info(`Waktu habis! Belum terjawab: ${remaining}`),
                         buttons: playAgain
                     });
                 }

@@ -20,17 +20,17 @@ module.exports = {
             `❖ ${ctx.format.bold("Bebas")}: ${ctx.format.formatSize(freeMem)}\n` +
             `❖ ${ctx.format.bold("Total")}: ${ctx.format.formatSize(totalMem)}\n` +
             "\n" +
-            `❖ ${ctx.format.bold("Model CPU")}: ${cpus[0].model}\n` +
-            `❖ ${ctx.format.bold("Kecepatan CPU")}: ${cpus[0].speed}\n` +
-            `❖ ${ctx.format.bold("Cores CPU")}: ${cpus.length}\n` +
-            `❖ ${ctx.format.bold("Muat Rata-Rata")}: ${os.loadavg().map(avg => avg.toFixed(2)).join(", ")}\n` +
+            `❖ ${ctx.format.bold("CPU")}: ${cpus[0].model}\n` +
+            `❖ ${ctx.format.bold("Speed")}: ${cpus[0].speed}\n` +
+            `❖ ${ctx.format.bold("Cores")}: ${cpus.length}\n` +
+            `❖ ${ctx.format.bold("Load")}: ${os.loadavg().map(avg => avg.toFixed(2)).join(", ")}\n` +
             "\n" +
-            `❖ ${ctx.format.bold("Versi NodeJS")}: ${process.version}\n` +
-            `❖ ${ctx.format.bold("Jalur Exec")}: ${process.execPath}\n` +
+            `❖ ${ctx.format.bold("Node")}: ${process.version}\n` +
+            `❖ ${ctx.format.bold("Exec")}: ${process.execPath}\n` +
             `❖ ${ctx.format.bold("PID")}: ${process.pid}\n` +
             "\n" +
             `❖ ${ctx.format.bold("Uptime")}: ${ctx.format.convertMsToDuration(Date.now() - ctx.me.readyAt)}\n` +
-            `❖ ${ctx.format.bold("Database")}: ${ctx.db.users.totalEntries} users, ${ctx.db.groups.totalEntries}/${groups.length} groups\n` +
+            `❖ ${ctx.format.bold("Database")}: ${ctx.db.users.totalEntries} user, ${ctx.db.groups.totalEntries}/${groups.length} grup\n` +
             `❖ ${ctx.format.bold("Library")}: Baileys (${ctx.helper.getBaileysVersion()})`
         );
     }

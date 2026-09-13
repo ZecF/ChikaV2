@@ -7,6 +7,6 @@ module.exports = {
         const newStatus = !senderDb.autodownload;
         senderDb.autodownload = newStatus;
         senderDb.save();
-        await ctx.reply(ctx.format.info(`Auto download berhasil ${newStatus ? "diaktifkan" : "dinonaktifkan"}!`));
+        await ctx.reply(ctx.format.info(`Auto download ${newStatus ? "aktif" : "nonaktif"}.`));
     }
 };

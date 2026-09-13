@@ -9,7 +9,7 @@ module.exports = {
                 text: `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                     `${ctx.format.generateCmdExample(ctx.used, "@6281234567891")}\n` +
                     ctx.format.generateNotes([
-                        "Balas/quote pesan untuk menjadikan pengirim sebagai akun target."
+                        "Balas/quote pesan target."
                     ]),
                 mentions: ["6281234567891@s.whatsapp.net"]
             });

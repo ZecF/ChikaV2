@@ -10,7 +10,7 @@ module.exports = {
         try {
             const buffer = await ctx.msg.media.download() || await ctx.quoted.media.download();
             await ctx.core.updateCoverPhoto(buffer);
-            await ctx.reply(ctx.format.info("Berhasil mengubah gambar sampul bot!"));
+            await ctx.reply(ctx.format.info("Cover bot diubah."));
         } catch (error) {
             await ctx.helper.handleError(ctx, error);
         }

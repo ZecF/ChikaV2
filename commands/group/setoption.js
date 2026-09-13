@@ -30,8 +30,8 @@ module.exports = {
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                 `${ctx.format.generateCmdExample(ctx.used, "antilink")}\n` +
                 ctx.format.generateNotes([
-                    `Ketik ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} list`)} untuk melihat daftar.`,
-                    `Ketik ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} status`)} untuk melihat status.`
+                    `Ketik: ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} list`)} untuk daftar`,
+                    `Ketik: ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} status`)} untuk status`
                 ])
             );
 
@@ -48,14 +48,13 @@ module.exports = {
 
         try {
             const setKey = input.toLowerCase();
-            if (!validOptions.includes(setKey)) return await ctx.reply(ctx.format.info(`Opsi ${ctx.format.inlineCode(input)} tidak valid!`));
-
+            if (!validOptions.includes(setKey)) return await ctx.reply(ctx.format.info(`Opsi ${ctx.format.inlineCode(input)} tidak valid.`));
             const groupDb = ctx.db.group;
             const currentStatus = groupDb.option?.[setKey] || false;
             const newStatus = !currentStatus;
             groupDb.option[setKey] = newStatus;
             groupDb.save();
-            await ctx.reply(ctx.format.info(`Opsi ${ctx.format.inlineCode(input)} berhasil ${newStatus ? "diaktifkan" : "dinonaktifkan"}!`));
+            await ctx.reply(ctx.format.info(`Opsi ${ctx.format.inlineCode(input)} ${newStatus ? "diaktifkan" : "dinonaktifkan"}.`));
         } catch (error) {
             await ctx.helper.handleError(ctx, error);
         }

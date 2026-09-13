@@ -12,11 +12,12 @@ module.exports = [{
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                 ctx.format.generateCmdExample(ctx.used, "get in the fucking robot, shinji!")
             );
-        if (input.length > 1000) return await ctx.reply(ctx.format.info("Maksimal 1000 karakter!"));
+        if (input.length > 1000) return await ctx.reply(ctx.format.info("Maks 1000 karakter."));
         try {
-            const result = ctx.api.createUrl("zellrayy", "/maker/brat", {
-                q: input
+            const apiUrl = ctx.api.createUrl("brat", "/maker/brat", {
+                text: input
             });
+            const result = (await ctx.request.get(apiUrl)).data.image_url;
             await ctx.reply({
                 sticker: {
                     url: result
@@ -43,11 +44,12 @@ module.exports = [{
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                 ctx.format.generateCmdExample(ctx.used, "get in the fucking robot, shinji!")
             );
-        if (input.length > 1000) return await ctx.reply(ctx.format.info("Maksimal 1000 karakter!"));
+        if (input.length > 1000) return await ctx.reply(ctx.format.info("Maks 1000 karakter."));
         try {
-            const result = ctx.api.createUrl("zellrayy", "/maker/bratvid", {
-                q: input
+            const apiUrl = ctx.api.createUrl("brat", "/maker/bratvid", {
+                text: input
             });
+            const result = (await ctx.request.get(apiUrl)).data.video_url;
             await ctx.reply({
                 sticker: {
                     url: result

@@ -10,7 +10,7 @@ module.exports = {
         try {
             const uploadUrl = await ctx.msg.media.upload() || await ctx.quoted.media.upload();
             const apiUrl = ctx.api.createUrl("kangwifi", "/tools/qrcode", {
-                url: input
+                url: uploadUrl
             });
             const result = (await ctx.request.get(apiUrl)).data.result.content;
             await ctx.reply(result);

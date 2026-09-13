@@ -25,7 +25,7 @@ class TopHandler {
         let text = "";
         let mentions = [];
         topMembers.forEach((member, id) => {
-            const isSelf = ctx.helper.areJidsSameUser(member.id, ctx.sender.lid);
+            const isSelf = ctx.helper.areJidsSameUser(member.id, ctx.sender.jid);
             let displayName = member.pushName || ctx.getId(member.id);
             if (isSelf) {
                 const mentionId = ctx.getId(member.id);

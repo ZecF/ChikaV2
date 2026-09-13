@@ -15,10 +15,10 @@ module.exports = [{
                 ctx.format.generateCmdExample(ctx.used, "6281234567891")
             );
         const isOnWhatsApp = await ctx.core.onWhatsApp(target.id);
-        if (!isOnWhatsApp?.[0]?.exists) return await ctx.reply(ctx.format.info("Akun tidak ada di WhatsApp!"));
+        if (!isOnWhatsApp?.[0]?.exists) return await ctx.reply(ctx.format.info("Akun tidak ada di WhatsApp."));
         try {
             await ctx.group().add(target.id);
-            await ctx.reply(ctx.format.info("Berhasil ditambahkan!"));
+            await ctx.reply(ctx.format.info("Ditambahkan."));
         } catch (error) {
             await ctx.helper.handleError(ctx, error);
         }
@@ -40,14 +40,14 @@ module.exports = [{
                 text: `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                     `${ctx.format.generateCmdExample(ctx.used, "@6281234567891")}\n` +
                     ctx.format.generateNotes([
-                        "Balas/quote pesan untuk menjadikan pengirim sebagai akun target."
+                        "Balas/quote pesan target."
                     ]),
                 mentions: ["6281234567891@s.whatsapp.net"]
             });
-        if (await ctx.group().isOwner(target.id)) return await ctx.reply(ctx.format.info("Dia adalah owner grup!"));
+        if (await ctx.group().isOwner(target.id)) return await ctx.reply(ctx.format.info("Dia owner grup."));
         try {
             await ctx.group().kick(target.id);
-            await ctx.reply(ctx.format.info("Berhasil dikeluarkan!"));
+            await ctx.reply(ctx.format.info("Dikeluarkan."));
         } catch (error) {
             await ctx.helper.handleError(ctx, error);
         }

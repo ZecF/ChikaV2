@@ -1,23 +1,11 @@
 const claimRewards = {
-    daily: {
+    regular: {
         reward: 100,
-        cooldown: 24 * 60 * 60 * 1000,
-        level: 1
+        cooldown: 24 * 60 * 60 * 1000
     },
-    weekly: {
+    premium: {
         reward: 500,
-        cooldown: 7 * 24 * 60 * 60 * 1000,
-        level: 15
-    },
-    monthly: {
-        reward: 2000,
-        cooldown: 30 * 24 * 60 * 60 * 1000,
-        level: 50
-    },
-    yearly: {
-        reward: 10000,
-        cooldown: 365 * 24 * 60 * 60 * 1000,
-        level: 75
+        cooldown: 24 * 60 * 60 * 1000
     }
 };
 
@@ -26,39 +14,18 @@ module.exports = {
     aliases: ["bonus", "klaim"],
     category: "profile",
     code: async (ctx) => {
-        const input = ctx.text;
-        if (!input)
-            return await ctx.reply(
-                `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
-                `${ctx.format.generateCmdExample(ctx.used, "daily")}\n` +
-                ctx.format.generateNotes([
-                    `Ketik ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} list`)} untuk melihat daftar.`
-                ])
-            );
-
-        if (input.toLowerCase() === "list") {
-            const listText = await ctx.list.get(ctx, "claim");
-            return await ctx.reply(listText);
-        }
-
         const senderDb = ctx.db.user;
-        const claim = claimRewards[input];
-        const level = senderDb.level || 0;
-
-        if (!claim) return await ctx.reply(ctx.format.info("Hadiah tidak valid!"));
-        if (ctx.sender.isOwner() || senderDb.premium) return await ctx.reply(ctx.format.info("Anda sudah memiliki koin tak terbatas!"));
-        if (level < claim.level) return await ctx.reply(ctx.format.info(`Anda perlu mencapai level ${claim.level} untuk mengklaim hadiah ini. Level Anda saat ini adalah ${level}.`));
-
+        const rewardData = ctx.sender.isOwner() || senderDb.premium ? claimRewards.premium : claimRewards.regular;
         const currentTime = Date.now();
-        const lastClaim = senderDb.lastClaim?.[input] || 0;
-        const remainingTime = claim.cooldown - (currentTime - lastClaim);
-        if (remainingTime > 0) return await ctx.reply(ctx.format.info(`Anda telah mengklaim hadiah ${input}! Tunggu ${ctx.format.convertMsToDuration(remainingTime)} untuk mengklaim lagi.`));
-
+        if (!senderDb.lastClaim) senderDb.lastClaim = {};
+        const lastClaim = senderDb.lastClaim.daily || 0;
+        const remainingTime = rewardData.cooldown - (currentTime - lastClaim);
+        if (remainingTime > 0) return await ctx.reply(ctx.format.info(`Sudah klaim. Tunggu ${ctx.format.convertMsToDuration(remainingTime)}.`));
         try {
-            senderDb.coin += claim.reward;
-            senderDb.lastClaim[input] = currentTime;
+            senderDb.coin += rewardData.reward;
+            senderDb.lastClaim.daily = currentTime;
             senderDb.save();
-            await ctx.reply(ctx.format.info(`Anda berhasil mengklaim hadiah ${input} sebesar ${claim.reward} koin! Koin Anda saat ini: ${senderDb.coin}`));
+            await ctx.reply(ctx.format.info(`Klaim ${rewardData.reward} koin. Total: ${senderDb.coin}`));
         } catch (error) {
             await ctx.helper.handleError(ctx, error);
         }

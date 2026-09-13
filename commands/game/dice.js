@@ -9,34 +9,36 @@ module.exports = {
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                 `${ctx.format.generateCmdExample(ctx.used, "4")}\n` +
                 ctx.format.generateNotes([
-                    "Tebak angka dadu antara 1-6."
+                    "Tebak: 1-6"
                 ])
             );
 
         const senderDb = ctx.db.user;
-        const isUnlimited = ctx.sender.isOwner() || senderDb.premium;
-        if (!isUnlimited && senderDb.coin < 500) return await ctx.reply(ctx.format.info("Koin Anda tidak cukup! Minimal memiliki 500 koin untuk bermain."));
+        if (senderDb.coin < 500) return await ctx.reply(ctx.format.info("Taruhan harus > 500."));
 
         try {
             const result = Math.floor(Math.random() * 6) + 1;
-            const isWin = input === result;
+            const winChance = ctx.sender.isOwner() || senderDb.premium ? 0.60 : 0.20;
+            const isWin = Math.random() < winChance;
+            const finalResult = isWin ? input : (result === input ? (input % 6) + 1 : result);
+
             let responseText = "";
             let prizeText = "";
 
             if (isWin) {
                 const prize = 1000;
-                if (!isUnlimited) senderDb.coin += prize;
+                senderDb.coin += prize;
                 responseText = "Selamat!";
                 prizeText = `+${prize} koin`;
             } else {
                 const forfeit = 500;
-                if (!isUnlimited) senderDb.coin -= forfeit;
+                senderDb.coin -= forfeit;
                 responseText = "Kalah!";
                 prizeText = `-${forfeit} koin`;
             }
 
-            if (!isUnlimited) senderDb.save();
-            await ctx.reply(ctx.format.info(`${responseText} Dadu menunjukkan angka ${result}. ${prizeText}`));
+            senderDb.save();
+            await ctx.reply(ctx.format.info(`${responseText} Dadu: ${finalResult}. ${prizeText}`));
         } catch (error) {
             await ctx.helper.handleError(ctx, error);
         }

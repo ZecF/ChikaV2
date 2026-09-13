@@ -10,14 +10,14 @@ module.exports = (bot) => {
             bot.readyAt = botRestart.readyAt;
             const timeago = bot.format.convertMsToDuration(Date.now() - botRestart.timestamp);
             await bot.sendMessage(botRestart.id, {
-                text: bot.format.info(`Berhasil dimulai ulang! Membutuhkan waktu ${timeago}.`),
+                text: bot.format.info(`Restart selesai dalam ${timeago}.`),
                 edit: botRestart.key
             });
             botDb.restart = {};
             botDb.save();
         }
 
-        const groupLink = `https://chat.whatsapp.com/${config.bot?.groupJid ? await b.groupInviteCode(config.bot.groupJid).catch(() => "FxEYZl2UyzAEI2yhaH34Ye") : "FxEYZl2UyzAEI2yhaH34Ye"}`;
+        const groupLink = `https://chat.whatsapp.com/${config.bot?.groupJid ? await b.groupInviteCode(config.bot.groupJid).catch(() => "DilACWwphLt0SBJLNwpY8l") : "DilACWwphLt0SBJLNwpY8l"}`;
         if (!config.bot.groupLink || config.bot.groupLink !== groupLink) config.core.set("bot.groupLink", groupLink);
     });
 };

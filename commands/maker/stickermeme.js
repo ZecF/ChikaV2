@@ -7,18 +7,17 @@ module.exports = {
     },
     code: async (ctx) => {
         const input = ctx.text;
-        if (!input) return await ctx.reply(
-            `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
-            ctx.format.generateCmdExample(ctx.used, "get in the fucking robot|shinji!")
-        );
+        if (!input)
+            return await ctx.reply(
+                `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
+                ctx.format.generateCmdExample(ctx.used, "get in the fucking robot|shinji!")
+            );
         if (!ctx.isMedia(["image", "sticker"])) return await ctx.reply(ctx.format.generateInstruction(["send", "reply"], ["image", "sticker"]));
         try {
             let [top, bottom] = input.split("|").map(inp => inp);
-            [top, bottom] = bottom ? [top || " ", bottom] : [" ", top || " "];
+            [top, bottom] = bottom ? [top || "_", bottom] : ["_", top || "_"];
             const uploadUrl = await ctx.msg.media.upload() || await ctx.quoted.media.upload();
-            const result = ctx.api.createUrl("nexray", "/maker/smeme", {
-                text_atas: top,
-                text_bawah: bottom,
+            const result = ctx.api.createUrl("https://api.memegen.link", `/images/custom/${top}/${bottom}.jpg`, {
                 background: uploadUrl
             });
             await ctx.reply({
