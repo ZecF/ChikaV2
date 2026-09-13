@@ -7,7 +7,8 @@ module.exports = (bot) => {
 
         const senderJid = ctx.sender.jid;
         const senderName = ctx.sender.pushName;
-        const groupName = isGroup ? (await ctx.group()).name() : null;
+        const groupJid = isGroup ? ctx.id : null;
+        const groupName = isGroup ? await ctx.group().name() : null;
         const isOwner = ctx.sender.isOwner();
 
         const botDb = ctx.db.bot;

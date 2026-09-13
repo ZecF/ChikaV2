@@ -61,7 +61,7 @@ module.exports = (bot) => {
         const senderId = ctx.getId(senderJid);
         const senderName = ctx.sender.pushName;
         const groupJid = isGroup ? ctx.id : null;
-        const groupName = isGroup ? (await ctx.group()).name() : null;
+        const groupName = isGroup ? await ctx.group().name() : null;
 
         const isOwner = ctx.sender.isOwner();
         const isCmd = ctx.isCmd();
