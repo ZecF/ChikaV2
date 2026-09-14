@@ -9,7 +9,6 @@ module.exports = {
         const usedMem = totalMem - freeMem;
         const cpus = os.cpus();
         const groups = Object.values(await ctx.core.groupFetchAllParticipating()).filter(g => !g.announce && !g.isCommunity && !g.isCommunityAnnounce);
-
         await ctx.reply(
             `❖ ${ctx.format.bold("OS")}: ${os.type()} (${os.platform()})\n` +
             `❖ ${ctx.format.bold("Arch")}: ${os.arch()}\n` +

@@ -13,6 +13,7 @@ module.exports = {
                 ctx.format.generateCmdExample(ctx.used, "https://itsreimau.is-a.dev")
             );
         if (!ctx.helper.isUrl(url)) return await ctx.reply(ctx.format.info(config.msg.invalidUrl));
+
         try {
             const result = ctx.api.createUrl("kangwifi", "/tools/webshot", {
                 url

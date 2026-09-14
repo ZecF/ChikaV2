@@ -17,7 +17,6 @@ module.exports = {
                     `Ketik: ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} reset`)} untuk reset riwayat`
                 ])
             );
-
         const senderDb = ctx.db.user;
         if (input.toLowerCase() === "reset") {
             senderDb.sessionId.chatgpt = [];

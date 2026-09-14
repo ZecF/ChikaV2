@@ -14,7 +14,6 @@ module.exports = [{
             await groupDb.save();
             return await ctx.reply(ctx.format.info("Bot di-mute di grup ini."));
         }
-
         const target = await ctx.target(["quoted", "mentioned"]);
         const daysAmount = parseInt(ctx.args[target.source === "quoted" ? 0 : 1], 10);
         if (!target.id)
@@ -27,7 +26,6 @@ module.exports = [{
                     ]),
                 mentions: ["6281234567891@s.whatsapp.net"]
             });
-
         if (daysAmount && daysAmount <= 0) return await ctx.reply(ctx.format.info("Durasi mute harus > 0 hari."));
         if (ctx.helper.areJidsSameUser(target.id, ctx.me.lid)) return await ctx.reply(ctx.format.info(`Ketik ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} bot`)} untuk mute bot.`));
         if (await ctx.group().isOwner(target.id)) return await ctx.reply(ctx.format.info("Dia owner grup."));
@@ -36,7 +34,6 @@ module.exports = [{
             const groupDb = ctx.db.group;
             const muteList = groupDb.mute || [];
             if (muteList.find(m => m.id === target.id)) return await ctx.reply(ctx.format.info("Sudah di-mute."));
-
             if (daysAmount && daysAmount > 0) {
                 muteList.push({
                     id: target.id,
@@ -73,7 +70,6 @@ module.exports = [{
             await groupDb.save();
             return await ctx.reply(ctx.format.info("Bot di-unmute di grup ini."));
         }
-
         const target = await ctx.target(["quoted", "mentioned"]);
         if (!target.id)
             return await ctx.reply({
@@ -85,7 +81,6 @@ module.exports = [{
                     ]),
                 mentions: ["6281234567891@s.whatsapp.net"]
             });
-
         if (ctx.helper.areJidsSameUser(target.id, ctx.me.lid)) return await ctx.reply(ctx.format.info(`Ketik ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} bot`)} untuk unmute bot.`));
         if (await ctx.group().isOwner(target.id)) return await ctx.reply(ctx.format.info("Dia owner grup."));
 

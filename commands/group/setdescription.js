@@ -14,6 +14,7 @@ module.exports = {
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                 ctx.format.generateCmdExample(ctx.used, "by itsreimau")
             );
+
         try {
             await ctx.group().updateDescription(input);
             await ctx.reply(ctx.format.info("Deskripsi grup diubah."));

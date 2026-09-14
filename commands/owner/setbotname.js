@@ -12,6 +12,7 @@ module.exports = {
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                 ctx.format.generateCmdExample(ctx.used, "nirwabot")
             );
+
         try {
             await ctx.core.updateProfileName(input);
             await ctx.reply(ctx.format.info("Nama bot diubah."));

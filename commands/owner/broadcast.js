@@ -16,7 +16,6 @@ module.exports = [{
                     `Ketik: ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} blacklist`)} untuk memasukkan grup ke blacklist (Hanya berfungsi pada grup)`
                 ])
             );
-
         const botDb = ctx.db.bot;
         let blacklist = botDb.blacklistBroadcast || [];
         if (ctx.args[0]?.toLowerCase() === "blacklist" && ctx.isGroup()) {
@@ -61,7 +60,7 @@ module.exports = [{
                     await ctx.helper.delay(delays[i]);
                 } catch {}
             }
-            await ctx.editMessage(ctx.id, waitMsg.key, ctx.format.info(`Terkirim ke ${groupJids.length} grup.`));
+            await ctx.edit(waitMsg.key, ctx.format.info(`Terkirim ke ${groupJids.length} grup.`));
         } catch (error) {
             await ctx.helper.handleError(ctx, error);
         }
@@ -85,7 +84,6 @@ module.exports = [{
                     `Ketik: ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} blacklist`)} untuk memasukkan grup ke blacklist (Hanya berfungsi pada grup)`
                 ])
             );
-
         const botDb = ctx.db.bot;
         let blacklist = botDb.blacklistBroadcast || [];
         if (ctx.args[0]?.toLowerCase() === "blacklist" && ctx.isGroup()) {
@@ -135,7 +133,7 @@ module.exports = [{
                     await ctx.helper.delay(delays[i]);
                 } catch {}
             }
-            await ctx.editMessage(ctx.id, waitMsg.key, ctx.format.info(`Terkirim ke ${groupJids.length} grup.`));
+            await ctx.edit(waitMsg.key, ctx.format.info(`Terkirim ke ${groupJids.length} grup.`));
         } catch (error) {
             await ctx.helper.handleError(ctx, error);
         }

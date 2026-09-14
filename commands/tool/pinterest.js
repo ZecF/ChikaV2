@@ -12,6 +12,7 @@ module.exports = {
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                 ctx.format.generateCmdExample(ctx.used, "rei ayanami")
             );
+
         try {
             const apiUrl = ctx.api.createUrl("kangwifi", "/search/pinterest2", {
                 query: input,

@@ -18,6 +18,7 @@ module.exports = {
                     `Gunakan: ${ctx.format.inlineCode("leave")} untuk simulasi keluar`
                 ])
             );
+
         try {
             const welcome = {
                 id: ctx.id,

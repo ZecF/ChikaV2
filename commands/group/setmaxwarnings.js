@@ -14,6 +14,7 @@ module.exports = {
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                 ctx.format.generateCmdExample(ctx.used, "8")
             );
+
         try {
             const groupDb = ctx.db.group;
             groupDb.maxwarnings = input;

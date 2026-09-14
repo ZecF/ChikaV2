@@ -22,8 +22,6 @@ module.exports = {
                 participants: new Set()
             };
 
-            sessions.set(ctx.id, true);
-
             await ctx.reply({
                 text: `✦ — ${result.soal}\n` +
                     "\n" +
@@ -39,6 +37,7 @@ module.exports = {
             const collector = ctx.MessageCollector({
                 time: game.timeout
             });
+            sessions.set(ctx.id, true);
             setTimeout(() => {
                 if (sessions.has(ctx.id)) {
                     sessions.delete(ctx.id);

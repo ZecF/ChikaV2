@@ -13,7 +13,6 @@ module.exports = {
         } else if (input === "n") {
             return await ctx.reply(ctx.format.info("Reset dibatalkan."));
         }
-
         await ctx.reply({
             text: ctx.format.info("Reset database? Data akan hilang permanen."),
             buttons: [{

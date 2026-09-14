@@ -14,6 +14,7 @@ module.exports = {
                 ctx.format.generateCmdExample(ctx.used, config.bot.groupLink)
             );
         if (!ctx.helper.isUrl(url)) return await ctx.reply(ctx.format.info(config.msg.invalidUrl));
+
         try {
             const urlCode = new URL(url).pathname.split("/").pop();
             await ctx.groups.acceptInvite(urlCode);

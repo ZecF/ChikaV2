@@ -21,12 +21,10 @@ async function WelcomeHandler(bot, welcome, type, isSimulate = false) {
     const text = customText ? customText.replace(/%tag%/g, tag).replace(/%subject%/g, metadata.subject).replace(/%description%/g, metadata.description) : (isWelcome ?
         `>ᴗ< ${bot.format.italic(`Selamat datang ${tag} di ${metadata.subject}!`)}` :
         `•︵• ${bot.format.italic(`Selamat tinggal, ${tag}!`)}`);
-
     await bot.sendMessage(groupJid, {
         text,
         mentions: [participantJid]
     });
-
     if (isWelcome && groupDb.text?.intro)
         await bot.sendMessage(groupJid, {
             text: groupDb.text.intro,

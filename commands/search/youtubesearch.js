@@ -12,7 +12,6 @@ module.exports = {
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                 ctx.format.generateCmdExample(ctx.used, "one last kiss - hikaru utada")
             );
-
         if (ctx.helper.isUrl(input))
             return await ctx.reply({
                 text: ctx.format.info("Input URL, gunakan tombol download:"),

@@ -34,8 +34,6 @@ module.exports = {
                 wrongAnswered: []
             };
 
-            sessions.set(ctx.id, true);
-
             await ctx.reply({
                 text: `✦ — ${result.pertanyaan}\n` +
                     `${result.semua_jawaban.map(answers => {
@@ -61,6 +59,7 @@ module.exports = {
                     return body.length === 1 && result.semua_jawaban.map(ans => Object.keys(ans)[0].toLowerCase()).includes(body);
                 }
             });
+            sessions.set(ctx.id, true);
             setTimeout(() => {
                 if (sessions.has(ctx.id)) {
                     sessions.delete(ctx.id);

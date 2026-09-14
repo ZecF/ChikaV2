@@ -12,17 +12,15 @@ module.exports = {
                     "Tebak: garuda/melati"
                 ])
             );
-
         const senderDb = ctx.db.user;
         if (senderDb.coin < 500) return await ctx.reply(ctx.format.info(`${config.msg.coin} Butuh: 500`));
 
         try {
-            const winRate = ctx.sender.isOwner() || senderDb.premium ? 0.60 : 0.20;
+            const winRate = (ctx.sender.isOwner() || senderDb.premium) ? 0.60 : 0.20;
             const isWin = Math.random() < winRate;
             const flip = isWin ? input : (input === "garuda" ? "melati" : "garuda");
             let responseText = "";
             let prizeText = "";
-
             if (isWin) {
                 const prize = 1000;
                 senderDb.coin += prize;
@@ -34,7 +32,6 @@ module.exports = {
                 responseText = "Kalah!";
                 prizeText = `-${forfeit} koin`;
             }
-
             senderDb.save();
             await ctx.reply(ctx.format.info(`${responseText} Koin: ${flip}. ${prizeText}`));
         } catch (error) {

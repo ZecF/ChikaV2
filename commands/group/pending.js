@@ -18,7 +18,6 @@ module.exports = [{
                 return await ctx.helper.handleError(ctx, error);
             }
         }
-
         const target = await ctx.target(["text"]);
         if (!target.id)
             return await ctx.reply(
@@ -28,7 +27,6 @@ module.exports = [{
                     `Ketik: ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} all`)} untuk menyetujui semua`
                 ])
             );
-
         const pendings = await ctx.group().pendingMembers();
         const isPending = pendings.some(pending => ctx.helper.areJidsSameUser(pending.lid, target.id));
         if (!isPending) return await ctx.reply(ctx.format.info("Tidak ada di daftar pending."));
@@ -60,7 +58,6 @@ module.exports = [{
                 return await ctx.helper.handleError(ctx, error);
             }
         }
-
         const target = await ctx.target(["text"]);
         if (!target.id)
             return await ctx.reply(
@@ -70,10 +67,10 @@ module.exports = [{
                     `Ketik: ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} all`)} untuk menolak semua`
                 ])
             );
-
         const pendings = await ctx.group().pendingMembers();
         const isPending = pendings.some(pending => ctx.helper.areJidsSameUser(pending.lid, target.id));
         if (!isPending) return await ctx.reply(ctx.format.info("Tidak ada di daftar pending."));
+
         try {
             await ctx.group().rejectPendingMembers(target.id);
             await ctx.reply(ctx.format.info("Ditolak."));

@@ -9,7 +9,6 @@ module.exports = {
             id: user.id,
             winGame: user.winGame || 0
         })).sort((a, b) => b.winGame - a.winGame);
-
         await ctx.reply(
             `❖ ${ctx.format.bold("Nama")}: ${ctx.sender.pushName}\n` +
             `❖ ${ctx.format.bold("Status")}: ${ctx.sender.isOwner() ? "Owner" : (userDb.premium ? `Premium (${userDb.premiumExpiration ? `${ctx.format.convertMsToDuration(userDb.premiumExpiration - Date.now(), ["hari", "jam"])} tersisa` : "Selamanya"})` : "Freemium")}\n` +

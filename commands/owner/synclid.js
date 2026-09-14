@@ -17,14 +17,17 @@ module.exports = {
             };
             const ownerId = await resolve(config.owner.id || []);
             const ownerCo = [];
-            for (const co of config.owner.co || []) ownerCo.push({ ...co, id: await resolve(co.id || []) });
+            for (const co of config.owner.co || []) ownerCo.push({
+                ...co,
+                id: await resolve(co.id || [])
+            });
             config.core.set("owner.id", ownerId);
             config.core.set("owner.co", ownerCo);
             await ctx.reply({
                 text: ctx.format.info("LID isinkronkan. Restart bot untuk menerapkan."),
                 buttons: [{
                     text: "Restart",
-                    id: `${ctx.used.prefix + ctx.used.command}restart`
+                    id: `${ctx.used.prefix}restart`
                 }]
             });
         } catch (error) {

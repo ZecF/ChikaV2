@@ -18,6 +18,7 @@ module.exports = [{
                 mentions: ["6281234567891@s.whatsapp.net"]
             });
         if (await ctx.group().isOwner(target.id)) return await ctx.reply(ctx.format.info("Dia owner grup."));
+
         try {
             await ctx.group().promote(target.id);
             await ctx.reply(ctx.format.info("Jadi admin."));
@@ -45,6 +46,7 @@ module.exports = [{
                 mentions: ["6281234567891@s.whatsapp.net"]
             });
         if (await ctx.group().isOwner(target.id)) return await ctx.reply(ctx.format.info("Dia anggota."));
+
         try {
             await ctx.group().demote(target.id);
             await ctx.reply(ctx.format.info("Jadi anggota."));

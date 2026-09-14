@@ -33,7 +33,6 @@ module.exports = {
             const source = flag.source;
             let searchResult = "";
             let downloadResult = "";
-
             if (source === "spotify") {
                 const searchApiUrl = ctx.api.createUrl("zellrayy", "/search/spotify", {
                     q: input
@@ -64,7 +63,6 @@ module.exports = {
                 });
                 downloadResult = (await ctx.request.get(downloadApiUrl)).data.result.url;
             }
-
             if (config.system.autoTypingOnCmd) await ctx.simulateTyping();
             await ctx.reply({
                 audio: {

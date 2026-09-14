@@ -10,12 +10,10 @@ module.exports = {
     code: async (ctx) => {
         const key = ctx.args[0];
         const text = ctx.text?.startsWith(`${key} `) ? ctx.text.slice(key.length + 1) : ctx.quoted?.body;
-
         if (key?.toLowerCase() === "list") {
             const listText = await ctx.list.get(ctx, "settext");
             return await ctx.reply(listText);
         }
-
         if (!key || !text)
             return await ctx.reply(
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
@@ -34,7 +32,6 @@ module.exports = {
             ];
             const setKey = key.toLowerCase();
             if (!validKeys.includes(setKey)) return await ctx.reply(ctx.format.info(`Teks ${ctx.format.inlineCode(key)} tidak valid.`));
-
             const groupDb = ctx.db.group;
             if (text.toLowerCase() === "delete") {
                 delete groupDb.text[setKey];

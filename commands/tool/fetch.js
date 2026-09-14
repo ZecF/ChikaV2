@@ -23,7 +23,6 @@ module.exports = {
             });
             const contentType = response?.headers?.["content-type"] || "";
             let data = response?.data;
-
             if (/webp/.test(contentType)) {
                 await ctx.reply({
                     sticker: data

@@ -12,7 +12,6 @@ module.exports = {
             const listText = await ctx.list.get(ctx, "osettext");
             return await ctx.reply(listText);
         }
-
         if (!key || !text)
             return await ctx.reply(
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +

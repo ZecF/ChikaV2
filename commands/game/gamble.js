@@ -9,7 +9,6 @@ module.exports = {
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                 ctx.format.generateCmdExample(ctx.used, "18")
             );
-
         const senderDb = ctx.db.user;
         if (input < 10) return await ctx.reply(ctx.format.info("Taruhan harus > 10."));
         if (senderDb.coin < input) return await ctx.reply(ctx.format.info(config.msg.coin));
@@ -18,7 +17,6 @@ module.exports = {
             const jackpotPrize = Math.ceil(input * 5);
             const winPrize = Math.ceil(input * 2);
             const emojis = ["🍏", "🍎", "🍊", "🍋", "🍑", "🪙", "🍅", "🍐", "🍒", "🥥", "🍌"];
-
             const topRow = Array.from({
                 length: 3
             }, () => emojis[Math.floor(Math.random() * emojis.length)]);
@@ -28,19 +26,21 @@ module.exports = {
             const bottomRow = Array.from({
                 length: 3
             }, () => emojis[Math.floor(Math.random() * emojis.length)]);
-
             const roll = Math.random();
             let isJackpot = false;
             let isWin = false;
-
-            if (ctx.sender.isOwner() || senderDb.premium) {
-                if (roll < 0.15) isJackpot = true;
-                else if (roll < 0.65) isWin = true;
-            } else {
-                if (roll < 0.05) isJackpot = true;
-                else if (roll < 0.25) isWin = true;
+            const rates = (ctx.sender.isOwner() || senderDb.premium) ? {
+                jackpot: 0.15,
+                win: 0.65
+            } : {
+                jackpot: 0.05,
+                win: 0.25
+            };
+            if (roll < rates.jackpot) {
+                isJackpot = true;
+            } else if (roll < rates.win) {
+                isWin = true;
             }
-
             if (isJackpot) {
                 const jackpotEmoji = emojis[Math.floor(Math.random() * emojis.length)];
                 middleRow[0] = middleRow[1] = middleRow[2] = jackpotEmoji;
@@ -61,11 +61,9 @@ module.exports = {
                     for (let i = 0; i < 3; i++) middleRow[i] = emojis[Math.floor(Math.random() * emojis.length)];
                 } while (middleRow[0] === middleRow[1] || middleRow[0] === middleRow[2] || middleRow[1] === middleRow[2]);
             }
-
             const slotText = `${topRow[0]} | ${topRow[1]} | ${topRow[2]}\n` +
                 `${middleRow[0]} | ${middleRow[1]} | ${middleRow[2]} <===\n` +
                 `${bottomRow[0]} | ${bottomRow[1]} | ${bottomRow[2]}`;
-
             let responseText = "";
             if (isJackpot) {
                 responseText = `Jackpot! +${jackpotPrize} koin (5x)`;
@@ -77,7 +75,6 @@ module.exports = {
                 responseText = `Kalah! Semoga beruntung lain kali. -${input} koin`;
                 senderDb.coin -= input;
             }
-
             senderDb.save();
             await ctx.reply(
                 `${ctx.format.info(responseText)}\n` +

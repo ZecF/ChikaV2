@@ -10,6 +10,6 @@ module.exports = {
         await service.fetchClientInfo();
         const bestServer = await service.findBestServer();
         const latencySpeed = (await service.testLatency(bestServer, 5)).latency;
-        await ctx.editMessage(ctx.id, pongMsg.key, ctx.format.info(`Pong! ${ctx.format.convertMsToDuration(latencySpeed)}`));
+        await ctx.edit(pongMsg.key, ctx.format.info(`Pong! ${ctx.format.convertMsToDuration(latencySpeed)}`));
     }
 };

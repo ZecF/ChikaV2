@@ -13,6 +13,7 @@ module.exports = {
                     ]),
                 mentions: ["6281234567891@s.whatsapp.net"]
             });
+
         try {
             const result = await ctx.core.profilePictureUrl(target.id);
             await ctx.reply({

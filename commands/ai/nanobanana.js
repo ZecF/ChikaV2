@@ -14,6 +14,7 @@ module.exports = {
                 ctx.format.generateCmdExample(ctx.used, "make it evangelion art style")
             );
         if (!ctx.isMedia(["image"])) return await ctx.reply(ctx.format.generateInstruction(["send", "reply"], ["image"]));
+
         try {
             const uploadUrl = await ctx.msg.media.upload() || await ctx.quoted.media.upload();
             const apiUrl = ctx.api.createUrl("lea", "/aitools/img2prompt", {

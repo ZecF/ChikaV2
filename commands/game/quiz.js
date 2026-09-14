@@ -28,7 +28,7 @@ class QuizGame {
         return text.trim();
     }
 
-    defaultFormatAnswer(ctx, answer, data) {
+    defaultFormatAnswer(ctx, answer) {
         return ctx.format.ucwords(answer);
     }
 
@@ -65,10 +65,8 @@ class QuizGame {
                 data
             };
 
-            sessions.set(sessionKey, true);
-
             const messageContent = {
-                text: this.formatQuestion(ctx, data),
+                text: this.formatQuestion(ctx, game.data),
                 buttons: [{
                     text: `Petunjuk (-${this.hintCost} koin)`,
                     id: `hint_${ctx.used.command}`
@@ -77,7 +75,6 @@ class QuizGame {
                     id: `surrender_${ctx.used.command}`
                 }]
             };
-
             if (this.imageKey && data[this.imageKey]) {
                 await ctx.reply({
                     image: {
@@ -100,6 +97,7 @@ class QuizGame {
             const collector = ctx.MessageCollector({
                 time: game.timeout
             });
+            sessions.set(sessionKey, true);
             setTimeout(() => {
                 if (sessions.has(sessionKey)) {
                     sessions.delete(sessionKey);
@@ -187,8 +185,7 @@ const options = {
         hintCost: 3,
         timeout: 60000,
         formatAnswer(ctx, answer, data) {
-            const description = data.deskripsi;
-            return `${ctx.format.ucwords(answer)} (${description})`;
+            return `${ctx.format.ucwords(answer)} (${data.deskripsi})`;
         }
     },
     lengkapikalimat: {
@@ -231,7 +228,7 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion() {
+        formatQuestion(ctx) {
             return `✦ — Bendera negara apa ini?\n` +
                 "\n" +
                 `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
@@ -247,7 +244,7 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion() {
+        formatQuestion(ctx) {
             return `✦ — Game apa ini?\n` +
                 "\n" +
                 `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
@@ -283,7 +280,7 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion() {
+        formatQuestion(ctx) {
             return `✦ — Dengarkan suara hero Mobile Legends ini!\n` +
                 "\n" +
                 `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
@@ -300,7 +297,7 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion() {
+        formatQuestion(ctx) {
             return `✦ — Siapa member JKT48 ini?\n` +
                 "\n" +
                 `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
@@ -326,7 +323,7 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion() {
+        formatQuestion(ctx) {
             return `✦ — Siapa karakter Free Fire ini?\n` +
                 "\n" +
                 `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
@@ -342,7 +339,7 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion() {
+        formatQuestion(ctx) {
             return `✦ — Kartun apa ini?\n` +
                 "\n" +
                 `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
@@ -366,7 +363,7 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion(ctx, answer, data) {
+        formatQuestion(ctx, data) {
             return `✦ — Lambang ${data.lambang} adalah unsur apa?\n` +
                 "\n" +
                 `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
@@ -382,7 +379,7 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion() {
+        formatQuestion(ctx) {
             return `✦ — Lagu apa ini?\n` +
                 "\n" +
                 `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
@@ -407,7 +404,7 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion() {
+        formatQuestion(ctx) {
             return `✦ — Logo apa ini?\n` +
                 "\n" +
                 `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +
@@ -432,7 +429,7 @@ const options = {
         coinReward: 5,
         hintCost: 3,
         timeout: 60000,
-        formatQuestion() {
+        formatQuestion(ctx) {
             return `✦ — Angka berapa yang terlihat?\n` +
                 "\n" +
                 `❖ ${ctx.format.bold("Bonus")}: ${this.coinReward} koin\n` +

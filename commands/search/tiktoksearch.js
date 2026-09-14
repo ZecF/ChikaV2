@@ -12,6 +12,7 @@ module.exports = {
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                 ctx.format.generateCmdExample(ctx.used, "evangelion")
             );
+
         try {
             const apiUrl = ctx.api.createUrl("nexray", "/search/tiktok", {
                 q: input

@@ -23,6 +23,7 @@ module.exports = [{
                 })
             );
         if (!ctx.helper.isUrl(url)) return await ctx.reply(ctx.format.info(config.msg.invalidUrl));
+
         try {
             const apiUrl = ctx.api.createUrl("nexray", "/downloader/savetube", {
                 url,
@@ -78,8 +79,9 @@ module.exports = [{
                 })
             );
         if (!ctx.helper.isUrl(url)) return await ctx.reply(ctx.format.info(config.msg.invalidUrl));
+
         try {
-            const quality = [240, 360, 480, 720, 1080].includes(flag.resolution) ? flag.resolution : 360;
+            const quality = ["240", "360", "480", "720", "1080"].includes(flag.resolution) ? flag.resolution : "360";
             const apiUrl = ctx.api.createUrl("kangwifi", "/downloader/y2meta", {
                 url,
                 format: "mp4",

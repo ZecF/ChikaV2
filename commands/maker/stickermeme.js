@@ -13,6 +13,7 @@ module.exports = {
                 ctx.format.generateCmdExample(ctx.used, "get in the fucking robot|shinji!")
             );
         if (!ctx.isMedia(["image", "sticker"])) return await ctx.reply(ctx.format.generateInstruction(["send", "reply"], ["image", "sticker"]));
+
         try {
             let [top, bottom] = input.split("|").map(inp => inp);
             [top, bottom] = bottom ? [top || "_", bottom] : ["_", top || "_"];

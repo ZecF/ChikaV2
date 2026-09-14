@@ -34,12 +34,10 @@ module.exports = {
                     `Ketik: ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} status`)} untuk status`
                 ])
             );
-
         if (input.toLowerCase() === "list") {
             const listText = await ctx.list.get(ctx, "setoption");
             return await ctx.reply(listText);
         }
-
         if (input.toLowerCase() === "status") {
             const groupOption = ctx.db.group.option || {};
             const text = validOptions.map(opt => `❖ ${ctx.format.ucwords(opt)}: ${groupOption[opt] ? "Aktif" : "Nonaktif"}`).join("\n");

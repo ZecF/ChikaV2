@@ -22,6 +22,7 @@ module.exports = [{
                 })
             );
         if (!await ctx.group(target.id)) return await ctx.reply(ctx.format.info("Grup tidak valid / bot tidak ada di sana."));
+
         try {
             const flag = ctx.flag({
                 silent: {
@@ -91,6 +92,7 @@ module.exports = [{
                 })
             );
         if (!await ctx.group(target.id)) return await ctx.reply(ctx.format.info("Grup tidak valid / bot tidak ada di sana."));
+
         try {
             const targetDb = ctx.getDb("groups", target.id);
             targetDb.sewa = false;

@@ -13,6 +13,7 @@ module.exports = {
                 ctx.format.generateCmdExample(ctx.used, "get in the fucking robot, shinji!")
             );
         if (input.length > 1000) return await ctx.reply(ctx.format.info("Maks 1000 karakter."));
+
         try {
             const result = ctx.api.createUrl("nexray", "/maker/iqc", {
                 text: input

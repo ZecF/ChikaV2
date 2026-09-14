@@ -14,6 +14,7 @@ module.exports = {
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                 ctx.format.generateCmdExample(ctx.used, "halo, dunia!")
             );
+
         try {
             let content;
             if (type) {

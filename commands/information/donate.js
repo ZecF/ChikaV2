@@ -13,7 +13,6 @@ module.exports = {
                 "❖ https://saweria.co/itsreimau (Saweria)\n" +
                 "❖ https://tako.id/itsreimau (Tako)\n" +
                 "❖ https://trakteer.id/itsreimau (Trakteer)";
-
             await ctx.reply({
                 image: {
                     url: qrisLink

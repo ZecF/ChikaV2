@@ -19,7 +19,6 @@ module.exports = [{
                     ]),
                 mentions: ["6281234567891@s.whatsapp.net"]
             });
-
         if (ctx.helper.areJidsSameUser(target.id, ctx.me.lid)) return await ctx.reply(ctx.format.info("Tidak bisa warning bot."));
         if (await ctx.group().isOwner(target.id)) return await ctx.reply(ctx.format.info("Tidak bisa warning owner."));
 
@@ -28,7 +27,6 @@ module.exports = [{
             const warnings = groupDb.warnings || [];
             const maxWarnings = groupDb.maxwarnings || 3;
             const targetIndex = warnings.findIndex(warning => ctx.helper.areJidsSameUser(warning.id, target.id));
-
             let newWarningCount;
             if (targetIndex !== -1) {
                 warnings[targetIndex].count += 1;
@@ -40,10 +38,8 @@ module.exports = [{
                     count: newWarningCount
                 });
             }
-
             groupDb.warnings = warnings;
             groupDb.save();
-
             if (newWarningCount >= maxWarnings) {
                 await ctx.reply(ctx.format.info(`Mencapai batas warning (${newWarningCount}/${maxWarnings}). Dikeluarkan.`));
                 await ctx.group().kick(target);
@@ -76,7 +72,6 @@ module.exports = [{
                     ]),
                 mentions: ["6281234567891@s.whatsapp.net"]
             });
-
         if (ctx.helper.areJidsSameUser(target.id, ctx.me.lid)) return await ctx.reply(ctx.format.info("Tidak bisa warning bot."));
         if (await ctx.group().isOwner(target.id)) return await ctx.reply(ctx.format.info("Tidak bisa warning owner."));
 
@@ -85,7 +80,6 @@ module.exports = [{
             const warnings = groupDb.warnings || [];
             const maxWarnings = groupDb.maxwarnings || 3;
             const targetIndex = warnings.findIndex(warning => ctx.helper.areJidsSameUser(warning.id, target.id));
-
             if (targetIndex === -1) return await ctx.reply(ctx.format.info("Tidak memiliki warning."));
             const currentCount = warnings[targetIndex].count || 0;
             if (currentCount <= 0) {
@@ -94,7 +88,6 @@ module.exports = [{
                 groupDb.save();
                 return await ctx.reply(ctx.format.info("Tidak memiliki warning."));
             }
-
             const newWarningCount = currentCount - 1;
             if (newWarningCount <= 0) {
                 warnings.splice(targetIndex, 1);

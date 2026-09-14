@@ -7,7 +7,6 @@ async function handleWarning(ctx, senderJid, senderId, groupJid, groupDb) {
     const senderWarning = warnings.find(warning => ctx.helper.areJidsSameUser(warning.id, senderJid));
     let currentWarnings = senderWarning ? senderWarning.count : 0;
     currentWarnings += 1;
-
     if (senderWarning) {
         senderWarning.count = currentWarnings;
     } else {
@@ -17,12 +16,10 @@ async function handleWarning(ctx, senderJid, senderId, groupJid, groupDb) {
         });
     }
     groupDb.warnings = warnings;
-
     await ctx.reply({
         text: ctx.format.info(`Warning ${currentWarnings}/${maxWarnings} untuk @${senderId}.`),
         mentions: [senderJid]
     });
-
     if (currentWarnings >= maxWarnings) {
         const isBotAdmin = await ctx.group(groupJid, !config.system.selfReply).isBotAdmin();
         if (isBotAdmin) {
@@ -39,7 +36,7 @@ async function handleWarning(ctx, senderJid, senderId, groupJid, groupDb) {
 async function handleAntiViolation(ctx, text, senderJid, senderId, groupJid, groupDb) {
     await ctx.reply(ctx.format.info(text));
     await ctx.delete(ctx.msg.key);
-    if (groupDb.option?.autokick) {
+    if (groupDb.option?.autokick || !config.system.restrict) {
         await ctx.group().kick(senderJid);
     } else {
         await handleWarning(ctx, senderJid, senderId, groupJid, groupDb);
@@ -219,7 +216,6 @@ module.exports = (bot) => {
                     senderSpam.lastMessageTime = now;
                     if (!spamData.some(spam => ctx.helper.areJidsSameUser(spam.id, senderJid))) spamData.push(senderSpam);
                     groupDb.spam = spamData;
-
                     if (newCount > 5) {
                         await handleAntiViolation(ctx, "Jangan spam, ngelag woy!", senderJid, senderId, groupJid, groupDb);
                         groupDb.spam = spamData.filter(spam => spam.id !== senderJid);

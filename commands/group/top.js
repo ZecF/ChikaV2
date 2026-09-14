@@ -3,9 +3,6 @@ class TopHandler {
         this.name = option.name;
         this.aliases = option.aliases;
         this.sortDirection = option.sortDirection;
-        this.permissions = {
-            group: true
-        };
     }
 
     async handle(ctx) {
@@ -20,7 +17,6 @@ class TopHandler {
         }
         members = members.filter(member => !ctx.helper.areJidsSameUser(member.id, ctx.me.lid));
         members.sort((a, b) => this.sortDirection === "asc" ? a.sent - b.sent : b.sent - a.sent);
-
         const topMembers = members.slice(0, 10);
         let text = "";
         let mentions = [];
@@ -61,7 +57,9 @@ module.exports = Object.entries(options).map(([name, option]) => {
         name: handler.name,
         aliases: handler.aliases,
         category: "group",
-        permissions: handler.permissions,
+        permissions: {
+            group: true
+        },
         code: async (ctx) => await handler.handle(ctx)
     };
 });

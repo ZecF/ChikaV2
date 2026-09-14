@@ -15,12 +15,10 @@ module.exports = {
                     `Ketik: ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} list`)} untuk daftar`
                 ])
             );
-
         if (surat.toLowerCase() === "list") {
             const listText = await ctx.list.get(ctx, "alquran");
             return await ctx.reply(listText);
         }
-
         if (isNaN(surat) || surat < 1 || surat > 114) return await ctx.reply(ctx.format.info("Surah 1–114."));
 
         try {
@@ -29,7 +27,6 @@ module.exports = {
             });
             const result = (await ctx.request.get(apiUrl)).data.result;
             const verses = result.verses;
-
             if (ayat) {
                 if (ayat.includes("-")) {
                     const [startAyat, endAyat] = ayat.split("-").map(Number);

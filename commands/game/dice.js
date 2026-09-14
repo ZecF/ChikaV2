@@ -12,19 +12,16 @@ module.exports = {
                     "Tebak: 1-6"
                 ])
             );
-
         const senderDb = ctx.db.user;
-        if (senderDb.coin < 500) return await ctx.reply(ctx.format.info("Taruhan harus > 500."));
+        if (senderDb.coin < 500) return await ctx.reply(ctx.format.info(`${config.msg.coin} Butuh: 500`));
 
         try {
             const result = Math.floor(Math.random() * 6) + 1;
-            const winChance = ctx.sender.isOwner() || senderDb.premium ? 0.60 : 0.20;
+            const winChance = (ctx.sender.isOwner() || senderDb.premium) ? 0.60 : 0.20;
             const isWin = Math.random() < winChance;
             const finalResult = isWin ? input : (result === input ? (input % 6) + 1 : result);
-
             let responseText = "";
             let prizeText = "";
-
             if (isWin) {
                 const prize = 1000;
                 senderDb.coin += prize;
@@ -36,7 +33,6 @@ module.exports = {
                 responseText = "Kalah!";
                 prizeText = `-${forfeit} koin`;
             }
-
             senderDb.save();
             await ctx.reply(ctx.format.info(`${responseText} Dadu: ${finalResult}. ${prizeText}`));
         } catch (error) {

@@ -10,12 +10,11 @@ module.exports = {
         if (!passage && !number)
             return await ctx.reply(
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
-                `${ctx.format.generateCmdExample(ctx.used, "kej 2:18")}\n` +
+                `${ctx.format.generateCmdExample(ctx.used, "ibr 9:27")}\n` +
                 ctx.format.generateNotes([
                     `Ketik: ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} list`)} untuk daftar`
                 ])
             );
-
         if (passage.toLowerCase() === "list") {
             const listText = await ctx.list.get(ctx, "alkitab");
             return await ctx.reply(listText);

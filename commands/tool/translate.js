@@ -11,7 +11,6 @@ module.exports = {
         if (langRegex.test(ctx.args[0])) langCode = ctx.args[0];
         let input = ctx.args.slice(langRegex.test(ctx.args[0]) ? 1 : 0).join(" ");
         if (!input && ctx.quoted?.body) input = ctx.quoted.body;
-
         if (!input)
             return await ctx.reply(
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +

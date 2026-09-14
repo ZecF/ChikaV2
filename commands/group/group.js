@@ -17,7 +17,6 @@ module.exports = {
                     `Ketik: ${ctx.format.inlineCode(`${ctx.used.prefix + ctx.used.command} list`)} untuk daftar`
                 ])
             );
-
         if (input.toLowerCase() === "list") {
             const listText = await ctx.list.get(ctx, "group");
             return await ctx.reply(listText);

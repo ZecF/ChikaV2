@@ -21,6 +21,7 @@ module.exports = [{
                 mentions: ["6281234567891@s.whatsapp.net"]
             });
         if (daysAmount && daysAmount <= 0) return await ctx.reply(ctx.format.info("Durasi premium harus > 0 hari."));
+
         try {
             const flag = ctx.flag({
                 silent: {
@@ -67,6 +68,7 @@ module.exports = [{
                     }),
                 mentions: ["6281234567891@s.whatsapp.net"]
             });
+
         try {
             const targetDb = ctx.getDb("users", target.id);
             targetDb.premium = false;

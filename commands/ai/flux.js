@@ -11,6 +11,7 @@ module.exports = {
                 `${ctx.format.generateInstruction(["send"], ["text"])}\n` +
                 ctx.format.generateCmdExample(ctx.used, "anime girl with short blue hair")
             );
+
         try {
             const result = ctx.api.createUrl("omegatech", "/api/ai/flux", {
                 prompt: input
