@@ -59,7 +59,6 @@ async function cnvmp3(url, format = 'mp3') {
 
 module.exports = {
     name: "ytdl",
-    // Tambahkan "play" ke dalam aliases agar modul ini yang merespons
     aliases: ["ytmp3", "ytmp4", "yta", "ytv", "youtubedl", "play"],
     category: "downloader",
     permissions: {
@@ -68,8 +67,14 @@ module.exports = {
     description: "Mengunduh Audio, Video, atau Memutar lagu dari YouTube",
     code: async (ctx) => {
         try {
-            const cmdName = ctx.used?.name?.toLowerCase() || "ytmp3";
-            const isPlay = cmdName === "play";
+            // BACA TEKS MURNI: Membaca apa yang benar-benar diketik oleh user (contoh: ".play lagu" atau ".ytmp4 link")
+            const rawMsg = ctx.used?.upsert?.toLowerCase() || "";
+            const cmdText = rawMsg.split(" ")[0]; // Mengambil kata pertamanya saja
+            
+            // Logika deteksi baru yang kebal dari salah paham sistem
+            const isPlay = cmdText.includes("play");
+            const isVideo = cmdText.includes("mp4") || cmdText.includes("ytv") || cmdText.includes("video");
+            const format = isVideo ? "mp4" : "mp3";
             
             let url = ctx.args[0] || (ctx.quoted ? ctx.quoted.body : null);
             const query = ctx.args.join(" ");
@@ -84,13 +89,12 @@ module.exports = {
 
                 await ctx.reply(`🔍 _Sedang mencari lagu: *${query}*..._`);
                 
-                // Melakukan pencarian di YouTube
                 const searchResults = await ytSearch(query);
-                const video = searchResults.videos[0]; // Ambil hasil paling atas
+                const video = searchResults.videos[0];
                 
                 if (!video) return await ctx.reply("❌ *Lagu tidak ditemukan!* Coba gunakan kata kunci lain.");
                 
-                url = video.url; // Timpa variabel URL kosong dengan URL hasil pencarian
+                url = video.url;
                 await ctx.reply(`🎵 *Ditemukan!* Mengunduh audio...\n\n📌 *Judul:* ${video.title}\n⏱️ *Durasi:* ${video.timestamp}\n👀 *Views:* ${video.views}`);
             } 
             // ==========================================
@@ -98,30 +102,23 @@ module.exports = {
             // ==========================================
             else {
                 if (!url || !url.match(/(?:youtube\.com|youtu\.be)/i)) {
-                    return await ctx.reply("❌ *Format Salah!*\nSilakan masukkan atau balas link YouTube yang valid.\n\n*Contoh:* `.ytmp3 https://youtu.be/dQw4w9WgXcQ`");
+                    return await ctx.reply("❌ *Format Salah!*\nSilakan masukkan atau balas link YouTube yang valid.\n\n*Contoh:* `.ytmp4 https://youtu.be/dQw4w9WgXcQ`");
                 }
-            }
-
-            const isVideo = (cmdName.includes("mp4") || cmdName.includes("ytv")) && !isPlay;
-            const format = isVideo ? "mp4" : "mp3";
-
-            if (!isPlay) {
+                
                 await ctx.reply(`⏳ _Sedang memproses ${format.toUpperCase()} dari YouTube..._`);
             }
 
-            // Memanggil fungsi scraper cnvmp3
+            // Memanggil fungsi API cnvmp3
             const result = await cnvmp3(url, format);
 
             if (format === "mp3") {
-                // Mengirim sebagai Audio
                 await ctx.reply({
                     audio: { url: result.download_url },
                     mimetype: "audio/mpeg",
-                    ptt: false, // Set ke true jika ingin format Voice Note
+                    ptt: false, // Set ke true jika ingin berupa rekaman suara (VN)
                     fileName: `${result.title}.mp3`
                 });
             } else {
-                // Mengirim sebagai Video
                 await ctx.reply({
                     video: { url: result.download_url },
                     caption: `✅ *Berhasil Mengunduh Video!*\n\n🎬 *Judul:* ${result.title}\n🔗 *Sumber:* ${result.original_url}`,
